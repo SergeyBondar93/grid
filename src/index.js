@@ -8,7 +8,7 @@ const width = 150
 const columns = [
   { width, headerName: "Number row", field: "row" },
   { width, headerName: "Make", field: "make" },
-  { width, headerName: "Model", field: "model" },
+  { isExpandable: true, width, headerName: "Model", field: "model" },
   { width, headerName: "Price", field: "price" },
   { width, headerName: "Col 1", field: "col1" },
   { width, headerName: "Col 2", field: "col2" },
@@ -73,7 +73,127 @@ const createDublicateRows = (n) => {
 
 const rows = createDublicateRows(100)
 
+const rowsWidthChildren = [
+  {
+    price: Math.floor(Math.random() * 100000 + 10000),
+    make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+    model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+    col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+    col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+    col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+    col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    row: 1,
+    children: [
+      {
+        price: Math.floor(Math.random() * 100000 + 10000),
+        make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+        model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+        col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+        col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+        col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+        col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        row: 1.1,
+      },
+      {
+        price: Math.floor(Math.random() * 100000 + 10000),
+        make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+        model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+        col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+        col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+        col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+        col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        row: 1.2,
+      }
+    ]
+  },
+  {
+    price: Math.floor(Math.random() * 100000 + 10000),
+    make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+    model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+    col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+    col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+    col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+    col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    row: 2,
+  },
+  {
+    price: Math.floor(Math.random() * 100000 + 10000),
+    make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+    model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+    col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+    col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+    col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+    col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+    col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+    row: 3,
+    children: [
+      {
+        price: Math.floor(Math.random() * 100000 + 10000),
+        make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+        model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+        col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+        col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+        col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+        col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        row: 3.1,
+      },
+      {
+        price: Math.floor(Math.random() * 100000 + 10000),
+        make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+        model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+        col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+        col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+        col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+        col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+        col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+        row: 3.2,
+      }
+    ]
+  }
+]
 
 
-ReactDOM.render(<App columns={columns} rows={rows} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
+
+
+ReactDOM.render(<App columns={columns} rows={rowsWidthChildren} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
 // ReactDOM.render(<App columns={columns} rows={rows} width={800} height={800} />, document.getElementById('root'));

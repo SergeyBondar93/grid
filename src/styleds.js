@@ -16,11 +16,14 @@ export const HeaderCell = styled.div`
   outline: 1px solid black;
   /* padding: 10px 0; */
   float: left; 
-
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
   span {
     margin: 10px;
     display: inline-block
   }
+
 `;
 
 
@@ -40,20 +43,26 @@ export const Row = styled.div`
 `;
 export const BodyCell = styled.div`
   border: 1px solid black;
+  display: flex;
+  align-items: center;
   span {
     margin: 10px;
     display: inline-block
+  }
+  button {
+    margin: 10px;
   }
 `;
 
 
 export const RightBorder = styled.div`
-  float: right;
+  /* float: right; */
   border: 1px solid black;
   height: 38px ;
-  width: 15px;
+  min-width: 6px;
   position: relative;
   z-index: 9999999;
+  cursor: w-resize;
 `
 
 export const AntiSelect = styled.div`

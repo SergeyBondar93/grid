@@ -8,49 +8,35 @@ import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
   const [newWidth, changeNewWidth] = useState(width)
   const clickX = useRef(0);
-
+  const widthRef = useRef(width)
 
   const handleMouseMove =
     useCallback(
       (e) => {
-
         const { clientX: currentX } = e;
         const calcNewWidth = width + (currentX - clickX.current);
-
         if (calcNewWidth >= 1600) return;
         else if (calcNewWidth <= 30) {
           changeNewWidth(30);
+          widthRef.current = 30
         } else {
           changeNewWidth(calcNewWidth);
+          widthRef.current = calcNewWidth
         }
-      }
-      ,
+      },
       [width, clickX.current],
     );
 
 
-  // const handleRemoveMouseMove =
-  //   useCallback(
-  //     () => {
-  //       onChangeWidth(index, newWidth);
-  //       document.body.removeEventListener('mousemove', handleMouseMove);
-  //     }
-  //     ,
-  //     [handleMouseMove, index, newWidth, onChangeWidth]
-  //   );
-  // console.log('ВНЕ ФУНКЦИИ', newWidth, 'индекс колонки - ', index);
-
 
   const handleMouseUp =
-    // useCallback(
-
-    (e) => {
-      // console.log('handleMouseUp', newWidth, 'индекс в функции - ', index);
-      onChangeWidth(index, newWidth);
-      document.body.removeEventListener('mouseup', handleMouseUp);
-      document.body.removeEventListener('mousemove', handleMouseMove);
-    }
-  // , [handleMouseMove, index, newWidth, onChangeWidth]);
+    useCallback(
+      (e) => {
+        onChangeWidth(index, widthRef.current);
+        document.body.removeEventListener('mouseup', handleMouseUp);
+        document.body.removeEventListener('mousemove', handleMouseMove);
+      }
+      , [handleMouseMove, index, newWidth, onChangeWidth]);
 
 
   const handleMouseDown =
@@ -70,11 +56,10 @@ const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
       <span >
         {text}
       </span>
-      <RightBorder onMouseDown={handleMouseDown} /*onMouseUp={handleRemoveMouseMove}*/ />
+      <RightBorder onMouseDown={handleMouseDown} />
     </HeaderCell>
   )
 }
-
 
 const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
   return <Header style={{ width: `${fullWidth}px`, transform: `translateX(${-translateX}px)` }} >
@@ -89,6 +74,8 @@ const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
 
 const App = ({ rows, columns, width, height }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
+  const [mappedRows, changeMappedRows] = useState(rows);
+
   const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => acc += width, 0))
   const [scrollLeft, changeScrollLeft] = useState(0);
   const gridRef = useRef();
@@ -100,8 +87,29 @@ const App = ({ rows, columns, width, height }) => {
   const handleScroll = e => {
     changeScrollLeft(e.scrollLeft)
   }
+
+  const onChangeExpand = useCallback((index, childrens) => {
+    if (mappedRows[index].isExpand) {
+      const newMappedRows = [...mappedRows.slice(0, index + 1), ...mappedRows.slice(index + 1 + childrens.length)];
+      const withNewExpand = setIn(newMappedRows, false, [index, 'isExpand'])
+      changeMappedRows(withNewExpand)
+    } else {
+      const newMappedRows = [...mappedRows.slice(0, index + 1), ...childrens, ...mappedRows.slice(index + 1)];
+      const withNewExpand = setIn(newMappedRows, true, [index, 'isExpand'])
+      changeMappedRows(withNewExpand)
+    }
+
+
+  })
+
+
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
-    const content = rows[rowIndex][mappedColumns[columnIndex].field]
+    const content = mappedRows[rowIndex][mappedColumns[columnIndex].field]
+
+    const isExpandable = columns[columnIndex].isExpandable;
+    const handleExpand = () => {
+      onChangeExpand(rowIndex, rows[rowIndex].children)
+    }
 
     return (
       <CellMeasurer
@@ -112,6 +120,7 @@ const App = ({ rows, columns, width, height }) => {
         rowIndex={rowIndex}
       >
         <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns[columnIndex].width }}>
+          {isExpandable && mappedRows[rowIndex].children ? <button onClick={handleExpand} >{mappedRows[rowIndex].isExpand ? '-' : '+'}</button> : null}
           <span>
             {content}
           </span>
@@ -122,8 +131,6 @@ const App = ({ rows, columns, width, height }) => {
 
   const handleChangeWidth = useCallback((index, width) => {
     const newColumns = setIn(mappedColumns, width, [index, 'width'])
-    console.log(index, width)
-    console.log(newColumns)
     changeMappedColumns(newColumns);
     fullWidth.current = newColumns.reduce((acc, { width }) => acc += width, 0)
   }, [mappedColumns])
@@ -132,7 +139,7 @@ const App = ({ rows, columns, width, height }) => {
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
     if (cache.current) cache.current.clearAll();
-  }, [mappedColumns])
+  }, [mappedColumns, mappedRows])
 
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
@@ -144,10 +151,8 @@ const App = ({ rows, columns, width, height }) => {
           columnWidth={({ index }) => mappedColumns[index].width}
           deferredMeasurementCache={cache.current}
           height={height}
-          // overscanColumnCount={0}
-          // overscanRowCount={2}
           cellRenderer={cell}
-          rowCount={rows.length}
+          rowCount={mappedRows.length}
           rowHeight={cache.current.rowHeight}
           width={width}
           onScroll={handleScroll}
