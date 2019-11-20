@@ -98,8 +98,6 @@ const App = ({ rows, columns, width, height }) => {
       const withNewExpand = setIn(newMappedRows, true, [index, 'isExpand'])
       changeMappedRows(withNewExpand)
     }
-
-
   })
 
 
@@ -108,7 +106,8 @@ const App = ({ rows, columns, width, height }) => {
 
     const isExpandable = columns[columnIndex].isExpandable;
     const handleExpand = () => {
-      onChangeExpand(rowIndex, rows[rowIndex].children)
+
+      onChangeExpand(rowIndex, mappedRows[rowIndex].children)
     }
 
     return (

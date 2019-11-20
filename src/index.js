@@ -187,6 +187,40 @@ const rowsWidthChildren = [
         col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
         col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
         row: 3.2,
+        children: [
+          {
+            price: Math.floor(Math.random() * 100000 + 10000),
+            make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+            model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+            col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+            col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+            col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+            col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+            col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+            col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+            col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+            col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            row: '3.2.1',
+          },
+          {
+            price: Math.floor(Math.random() * 100000 + 10000),
+            make: generateLorem(Math.floor(Math.random() * 40 + 1)),
+            model: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            col1: generateLorem(Math.floor(Math.random() * 20 + 1)),
+            col2: generateLorem(Math.floor(Math.random() * 3 + 1)),
+            col3: generateLorem(Math.floor(Math.random() * 5 + 1)),
+            col4: generateLorem(Math.floor(Math.random() * 15 + 1)),
+            col5: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            col6: generateLorem(Math.floor(Math.random() * 15 + 1)),
+            col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+            col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
+            col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
+            col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
+            row: '3.2.2',
+          }
+        ]
       }
     ]
   }
