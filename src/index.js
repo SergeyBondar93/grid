@@ -2,11 +2,78 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const width = 150
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const columns = [
+  { width, headerName: "Number row", field: "row" },
+  { width, headerName: "Make", field: "make" },
+  { width, headerName: "Model", field: "model" },
+  { width, headerName: "Price", field: "price" },
+  { width, headerName: "Col 1", field: "col1" },
+  { width, headerName: "Col 2", field: "col2" },
+  { width, headerName: "Col 3", field: "col3" },
+  { width, headerName: "Col 4", field: "col4" },
+  { width, headerName: "Col 5", field: "col5" },
+  { width, headerName: "Col 6", field: "col6" },
+  { width, headerName: "Col 7", field: "col7" },
+  { width, headerName: "Col 8", field: "col7" },
+  { width, headerName: "Col 9", field: "col8" },
+  { width, headerName: "Col 10", field: "col10" }
+]
+
+const createDublicateRows = (n) => {
+  const row = {
+    make: "Toyota", model: "Celica", price: 35000,
+    col1: 'field1',
+    col2: 'field2',
+    col3: 'field3',
+    col4: 'field4',
+    col5: 'field5',
+    col6: 'field6',
+    col7: 'field7',
+    col7: 'field7',
+    col8: 'field8',
+    col10: 'field10'
+  }
+  const res = [];
+  for (let i = 0; i < n; i++) {
+    res.push({
+      ...row,
+      row: i
+    })
+  }
+  return res
+}
+
+const rows = createDublicateRows(100)
+
+export const generateLorem = (n) => {
+  const text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Mauris tristique tortor quam, eget iaculis dolor facilisis vitae. Aenean et blandit sapien. 
+    Quisque sed placerat tortor, egestas tincidunt arcu. Quisque ac justo eu lacus imperdiet 
+    vestibulum quis egestas ligula. Integer orci nunc, viverra at vehicula vel, iaculis et enim. 
+    Cras sagittis eleifend pharetra. Integer odio leo, fermentum sed odio in, faucibus ornare nisi. 
+    Morbi urna enim, sollicitudin vel commodo sed, pellentesque in velit. Phasellus aliquet lectus
+     eu nunc sollicitudin tempus. Aliquam a turpis eget ex imperdiet ullamcorper vitae id nisi. 
+     Donec rhoncus elit sit amet sodales efficitur. Nam iaculis, est et gravida congue, mauris nulla
+      pulvinar sem, ac congue dui nisl vitae orci. Aliquam venenatis nunc sit amet dignissim viverra.`
+  const words = text.split(' ').slice(0, 100);
+  if (n < 100) return words.slice(0, n).join(' ')
+  const mult = +String(n / 100).split('.')[0];
+  const remains = n % 100;
+  const res = [];
+  for (let i = 0; i < mult; i++) {
+    res.push(text);
+  }
+  res.push(words.slice(0, remains).join(' '))
+  return res.join(' ')
+}
+
+
+
+
+
+
+ReactDOM.render(<App columns={columns} rows={rows} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
+// ReactDOM.render(<App columns={columns} rows={rows} width={800} height={800} />, document.getElementById('root'));
