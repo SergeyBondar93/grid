@@ -1,17 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Header, HeaderCell, Body, BodyCell, RightBorder, AntiSelect } from "./styleds";
 import { Grid } from 'react-virtualized';
-import { generateLorem } from '.';
 import { setIn } from 'utilitify'
 import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-// const arr = [
-//   { width: 10 },
-//   { width: 20 },
-//   { width: 30 },
-//   { width: 40 },
-//   { width: 50 },
-// ]
-// console.log(setIn(arr, 999, ['1', 'width']))
 
 
 const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
@@ -76,7 +67,6 @@ const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
 
 
 const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
-
   return <Header style={{ width: `${fullWidth}px`, transform: `translateX(${-translateX}px)` }} >
     {columns.map((el, index) => <HeaderCellWrapper width={el.width} text={el.headerName} onChangeWidth={onChangeWidth} index={index} />)}
   </Header>
@@ -88,7 +78,8 @@ const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
 
 
 const App = ({ rows, columns, width, height }) => {
-  const [mappedColumns, changeMappedColumns] = useState({ columns, fullWidth: columns.reduce((acc, { width }) => acc += width, 0) });
+  const [mappedColumns, changeMappedColumns] = useState(columns);
+  const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => acc += width, 0))
   const [scrollLeft, changeScrollLeft] = useState(0);
   const gridRef = useRef();
   const cache = useRef(new CellMeasurerCache({
@@ -100,7 +91,7 @@ const App = ({ rows, columns, width, height }) => {
     changeScrollLeft(e.scrollLeft)
   }
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
-    const content = rows[rowIndex][columns[columnIndex].field]
+    const content = rows[rowIndex][mappedColumns[columnIndex].field]
 
     return (
       <CellMeasurer
@@ -110,7 +101,7 @@ const App = ({ rows, columns, width, height }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns.columns[columnIndex].width }}>
+        <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns[columnIndex].width }}>
           <span>
             {content}
           </span>
@@ -120,8 +111,9 @@ const App = ({ rows, columns, width, height }) => {
   }
 
   const handleChangeWidth = useCallback((index, width) => {
-    const newColumns = setIn(mappedColumns.columns, width, [index, 'width'])
-    changeMappedColumns({ columns: newColumns, fullWidth: newColumns.reduce((acc, { width }) => acc += width, 0) });
+    const newColumns = setIn(mappedColumns, width, [index, 'width'])
+    changeMappedColumns(newColumns);
+    fullWidth.current = newColumns.reduce((acc, { width }) => acc += width, 0)
   }, [mappedColumns])
 
 
@@ -132,12 +124,12 @@ const App = ({ rows, columns, width, height }) => {
 
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
-      <HeaderWrapper fullWidth={mappedColumns.fullWidth} columns={mappedColumns.columns} translateX={scrollLeft} onChangeWidth={handleChangeWidth}  ></HeaderWrapper>
+      <HeaderWrapper fullWidth={fullWidth.current} columns={mappedColumns} translateX={scrollLeft} onChangeWidth={handleChangeWidth} />
       <Body>
         <Grid
           ref={gridRef}
-          columnCount={mappedColumns.columns.length}
-          columnWidth={({ index }) => mappedColumns.columns[index].width}
+          columnCount={mappedColumns.length}
+          columnWidth={({ index }) => mappedColumns[index].width}
           deferredMeasurementCache={cache.current}
           height={height}
           // overscanColumnCount={0}
