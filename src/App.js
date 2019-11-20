@@ -7,18 +7,15 @@ import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
   const [newWidth, changeNewWidth] = useState(width)
-  // const newWidth = useRef(width)
-  let clickX = 0;
-  // const [antiSelectLayer, changeAntiSelectLayer] = useState(false)
-  // console.log(clickX)
+  const clickX = useRef(0);
 
 
   const handleMouseMove =
     useCallback(
       (e) => {
+
         const { clientX: currentX } = e;
-        const calcNewWidth = width + (currentX - clickX);
-        console.log('пришедшая', width)
+        const calcNewWidth = width + (currentX - clickX.current);
 
         if (calcNewWidth >= 1600) return;
         else if (calcNewWidth <= 30) {
@@ -28,39 +25,52 @@ const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
         }
       }
       ,
-      [width, clickX],
+      [width, clickX.current],
     );
 
 
-  const handleRemoveMouseMove =
-    useCallback(
-      () => {
-        onChangeWidth(index, newWidth);
-        document.body.removeEventListener('mousemove', handleMouseMove);
-      }
-      , [handleMouseMove, index, newWidth, onChangeWidth]);
+  // const handleRemoveMouseMove =
+  //   useCallback(
+  //     () => {
+  //       onChangeWidth(index, newWidth);
+  //       document.body.removeEventListener('mousemove', handleMouseMove);
+  //     }
+  //     ,
+  //     [handleMouseMove, index, newWidth, onChangeWidth]
+  //   );
+  // console.log('ВНЕ ФУНКЦИИ', newWidth, 'индекс колонки - ', index);
+
+
+  const handleMouseUp =
+    // useCallback(
+
+    (e) => {
+      // console.log('handleMouseUp', newWidth, 'индекс в функции - ', index);
+      onChangeWidth(index, newWidth);
+      document.body.removeEventListener('mouseup', handleMouseUp);
+      document.body.removeEventListener('mousemove', handleMouseMove);
+    }
+  // , [handleMouseMove, index, newWidth, onChangeWidth]);
 
 
   const handleMouseDown =
     useCallback(
       (e) => {
-        clickX = e.clientX;
-
-        document.body.addEventListener('mouseup', () => {
-          handleRemoveMouseMove()
-        });
+        clickX.current = e.clientX;
+        document.body.addEventListener('mouseup', handleMouseUp)
         document.body.addEventListener('mousemove', handleMouseMove);
       }
       ,
-      [handleMouseMove, newWidth],
+      [handleMouseMove, index, newWidth, onChangeWidth],
     );
+
+
   return (
     <HeaderCell style={{ width: `${newWidth}px` }} >
       <span >
         {text}
       </span>
-      <RightBorder onMouseDown={handleMouseDown} onMouseUp={handleRemoveMouseMove} />
-      {/* {antiSelectLayer && <AntiSelect> {generateLorem(500)} </AntiSelect>} */}
+      <RightBorder onMouseDown={handleMouseDown} /*onMouseUp={handleRemoveMouseMove}*/ />
     </HeaderCell>
   )
 }
@@ -112,6 +122,8 @@ const App = ({ rows, columns, width, height }) => {
 
   const handleChangeWidth = useCallback((index, width) => {
     const newColumns = setIn(mappedColumns, width, [index, 'width'])
+    console.log(index, width)
+    console.log(newColumns)
     changeMappedColumns(newColumns);
     fullWidth.current = newColumns.reduce((acc, { width }) => acc += width, 0)
   }, [mappedColumns])
