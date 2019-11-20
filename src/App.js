@@ -2,6 +2,17 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Header, HeaderCell, Body, BodyCell, RightBorder, AntiSelect } from "./styleds";
 import { Grid } from 'react-virtualized';
 import { generateLorem } from '.';
+import { setIn } from 'utilitify'
+import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+// const arr = [
+//   { width: 10 },
+//   { width: 20 },
+//   { width: 30 },
+//   { width: 40 },
+//   { width: 50 },
+// ]
+// console.log(setIn(arr, 999, ['1', 'width']))
+
 
 const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
   const [newWidth, changeNewWidth] = useState(width)
@@ -16,7 +27,7 @@ const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
       (e) => {
         const { clientX: currentX } = e;
         const calcNewWidth = width + (currentX - clickX);
-        console.log(width)
+        console.log('пришедшая', width)
 
         if (calcNewWidth >= 1600) return;
         else if (calcNewWidth <= 30) {
@@ -73,45 +84,50 @@ const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
 
 
 
+
+
+
 const App = ({ rows, columns, width, height }) => {
   const [mappedColumns, changeMappedColumns] = useState({ columns, fullWidth: columns.reduce((acc, { width }) => acc += width, 0) });
   const [scrollLeft, changeScrollLeft] = useState(0);
   const gridRef = useRef();
-
+  const cache = useRef(new CellMeasurerCache({
+    fixedWidth: true,
+    defaultHeight: 100
+  }))
 
   const handleScroll = e => {
     changeScrollLeft(e.scrollLeft)
   }
-  const cell = ({ columnIndex, key, rowIndex, style }) => {
+  const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
+    const content = rows[rowIndex][columns[columnIndex].field]
+
     return (
-      <BodyCell tabIndex={0} key={key} style={style}>
-        <span>
-          {rows[rowIndex][columns[columnIndex].field]}
-        </span>
-      </BodyCell>
+      <CellMeasurer
+        cache={cache.current}
+        columnIndex={columnIndex}
+        key={key}
+        parent={parent}
+        rowIndex={rowIndex}
+      >
+        <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns.columns[columnIndex].width }}>
+          <span>
+            {content}
+          </span>
+        </BodyCell>
+      </CellMeasurer>
     )
   }
 
   const handleChangeWidth = useCallback((index, width) => {
-    const newColumns = [...mappedColumns.columns];
-    const newColumn = { ...newColumns[index], width };
-    newColumns[index] = newColumn;
-    /* вот тут выявляется проблема, даже 2 
-      1) каждое перетаскивание добавляет 1 вызов этой функции, то есть она срабатывает не 1 раз
-      2) каждый раз почему то mappedColumns.columns является массивом колонок который изначально пришёл, 
-      то есть мы делаем изменения состояние не как 1 - 2, 2 - 3, 3 - 4, 4 - 5 
-      а делается вот так 1 - 2, 1 - 3, 1 - 4, 1 - 5
-      то есть прошлые наши изменения сбрасываются.   
-      из за вот этого может показаться что логика перетягивания работает не верно, но в ней вроде проблем нет
-      но это не точно
-      */
-    console.log(newColumns)
+    const newColumns = setIn(mappedColumns.columns, width, [index, 'width'])
     changeMappedColumns({ columns: newColumns, fullWidth: newColumns.reduce((acc, { width }) => acc += width, 0) });
   }, [mappedColumns])
 
 
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
+    if (cache.current) cache.current.clearAll();
   }, [mappedColumns])
 
   return (
@@ -120,12 +136,15 @@ const App = ({ rows, columns, width, height }) => {
       <Body>
         <Grid
           ref={gridRef}
-          cellRenderer={cell}
-          columnWidth={({ index }) => mappedColumns.columns[index].width}
           columnCount={mappedColumns.columns.length}
+          columnWidth={({ index }) => mappedColumns.columns[index].width}
+          deferredMeasurementCache={cache.current}
           height={height}
-          rowHeight={40}
+          // overscanColumnCount={0}
+          // overscanRowCount={2}
+          cellRenderer={cell}
           rowCount={rows.length}
+          rowHeight={cache.current.rowHeight}
           width={width}
           onScroll={handleScroll}
         />
