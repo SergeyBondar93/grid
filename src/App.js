@@ -124,7 +124,9 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
 
 
 
-  const handleSelect = (key) => {
+  const handleSelect = (e, key) => {
+    if (e.target.tagName === 'BUTTON') return
+
     if (select === 'multi') changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
     if (select === 'one') changeSelectedRows([key]);
   }
@@ -134,7 +136,7 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
     const expandLevel = !columnIndex && mappedRows[rowIndex].expandLevel || 0;
     const isExpandable = columns[columnIndex].isExpandable;
 
-    const handleExpand = () => {
+    const handleExpand = (e) => {
       onChangeExpand(rowIndex, mappedRows[rowIndex].children)
     };
 
@@ -151,7 +153,7 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <BodyCell onClick={() => handleSelect(mappedRows[rowIndex].key)} key={key} style={{ ...style, backgroundColor: checkSelected(), width: mappedColumns[columnIndex].width }}>
+        <BodyCell onClick={(e) => handleSelect(e, mappedRows[rowIndex].key)} key={key} style={{ ...style, backgroundColor: checkSelected(), width: mappedColumns[columnIndex].width }}>
           <div style={{ width: `${expandLevel * 20}px`, height: '20px', backgroundColor: 'red' }} />
           {isExpandable && mappedRows[rowIndex].children ? <button onClick={handleExpand} >{mappedRows[rowIndex].isExpand ? '-' : '+'}</button> : null}
           <span>
