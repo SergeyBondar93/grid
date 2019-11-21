@@ -90,12 +90,20 @@ const App = ({ rows, columns, width, height }) => {
 
   const onChangeExpand = useCallback((index, childrens) => {
     if (mappedRows[index].isExpand) {
-      const newMappedRows = [...mappedRows.slice(0, index + 1), ...mappedRows.slice(index + 1 + childrens.length)];
+      let childrensLength = 0;
+      for (let i = index + 1; i < mappedRows.length; i++) {
+        if (mappedRows[i].expandLevel) childrensLength++
+        else break
+      }
+      const newMappedRows = [...mappedRows.slice(0, index + 1), ...mappedRows.slice(index + 1 + childrensLength)];
       const withNewExpand = setIn(newMappedRows, false, [index, 'isExpand'])
       changeMappedRows(withNewExpand)
     } else {
-      const newMappedRows = [...mappedRows.slice(0, index + 1), ...childrens, ...mappedRows.slice(index + 1)];
+      const parentExpandLevel = mappedRows[index].expandLevel || 0
+      const newChildrens = childrens.map(el => ({ ...el, expandLevel: parentExpandLevel + 1 }))
+      const newMappedRows = [...mappedRows.slice(0, index + 1), ...newChildrens, ...mappedRows.slice(index + 1)];
       const withNewExpand = setIn(newMappedRows, true, [index, 'isExpand'])
+
       changeMappedRows(withNewExpand)
     }
   })
@@ -103,7 +111,7 @@ const App = ({ rows, columns, width, height }) => {
 
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field]
-
+    const expandLevel = !columnIndex && mappedRows[rowIndex].expandLevel || 0;
     const isExpandable = columns[columnIndex].isExpandable;
     const handleExpand = () => {
 
@@ -119,6 +127,7 @@ const App = ({ rows, columns, width, height }) => {
         rowIndex={rowIndex}
       >
         <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns[columnIndex].width }}>
+          <div style={{ width: `${expandLevel * 20}px`, height: '20px', backgroundColor: 'red' }} />
           {isExpandable && mappedRows[rowIndex].children ? <button onClick={handleExpand} >{mappedRows[rowIndex].isExpand ? '-' : '+'}</button> : null}
           <span>
             {content}
