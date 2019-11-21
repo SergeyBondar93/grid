@@ -78,7 +78,7 @@ const guid = () => {
 };
 
 
-// select = multy | one | false
+// select = multi | one | false
 const addOrDeleteItemFromArray = (array, item) => {
   if (array.some(el => el === item)) return array.filter(el => el !== item);
   return [...array, item];
@@ -86,7 +86,7 @@ const addOrDeleteItemFromArray = (array, item) => {
 
 
 
-const App = ({ rows, columns, width, height, select = 'one' }) => {
+const App = ({ rows, columns, width, height, select = 'multi' }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([])
