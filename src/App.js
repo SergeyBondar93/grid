@@ -86,7 +86,7 @@ const addOrDeleteItemFromArray = (array, item) => {
 
 
 
-const App = ({ rows, columns, width, height, select = 'multi' }) => {
+const App = ({ rows, columns, width, height, select = 'one' }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([])
@@ -172,7 +172,7 @@ const App = ({ rows, columns, width, height, select = 'multi' }) => {
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
     if (cache.current) cache.current.clearAll();
-  }, [mappedColumns, mappedRows, selectedRows])
+  }, [mappedColumns, mappedRows])
 
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
