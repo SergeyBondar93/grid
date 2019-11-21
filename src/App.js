@@ -67,15 +67,29 @@ const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
   </Header>
 }
 
+const guid = () => {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+
+  return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+};
+
+
+// select = multy | one | false
+const addOrDeleteItemFromArray = (array, item) => {
+  if (array.some(el => el === item)) return array.filter(el => el !== item);
+  return [...array, item];
+};
 
 
 
-
-
-const App = ({ rows, columns, width, height }) => {
+const App = ({ rows, columns, width, height, select = 'multi' }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
-  const [mappedRows, changeMappedRows] = useState(rows);
-
+  const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
+  const [selectedRows, changeSelectedRows] = useState([])
   const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => acc += width, 0))
   const [scrollLeft, changeScrollLeft] = useState(0);
   const gridRef = useRef();
@@ -100,22 +114,33 @@ const App = ({ rows, columns, width, height }) => {
       changeMappedRows(withNewExpand)
     } else {
       const parentExpandLevel = mappedRows[index].expandLevel || 0
-      const newChildrens = childrens.map(el => ({ ...el, expandLevel: parentExpandLevel + 1 }))
+      const newChildrens = childrens.map(el => ({ ...el, expandLevel: parentExpandLevel + 1, key: guid() }))
       const newMappedRows = [...mappedRows.slice(0, index + 1), ...newChildrens, ...mappedRows.slice(index + 1)];
       const withNewExpand = setIn(newMappedRows, true, [index, 'isExpand'])
-
       changeMappedRows(withNewExpand)
     }
   })
 
 
+
+
+  const handleSelect = (key) => {
+    if (select === 'multi') changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
+    if (select === 'one') changeSelectedRows([key]);
+  }
+
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field]
     const expandLevel = !columnIndex && mappedRows[rowIndex].expandLevel || 0;
     const isExpandable = columns[columnIndex].isExpandable;
-    const handleExpand = () => {
 
+    const handleExpand = () => {
       onChangeExpand(rowIndex, mappedRows[rowIndex].children)
+    };
+
+    const checkSelected = () => {
+      if (selectedRows.some(key => key === mappedRows[rowIndex].key)) return 'lightblue';
+      return
     }
 
     return (
@@ -126,7 +151,7 @@ const App = ({ rows, columns, width, height }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <BodyCell tabIndex={0} key={key} style={{ ...style, width: mappedColumns[columnIndex].width }}>
+        <BodyCell onClick={() => handleSelect(mappedRows[rowIndex].key)} key={key} style={{ ...style, backgroundColor: checkSelected(), width: mappedColumns[columnIndex].width }}>
           <div style={{ width: `${expandLevel * 20}px`, height: '20px', backgroundColor: 'red' }} />
           {isExpandable && mappedRows[rowIndex].children ? <button onClick={handleExpand} >{mappedRows[rowIndex].isExpand ? '-' : '+'}</button> : null}
           <span>
@@ -147,7 +172,7 @@ const App = ({ rows, columns, width, height }) => {
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
     if (cache.current) cache.current.clearAll();
-  }, [mappedColumns, mappedRows])
+  }, [mappedColumns, mappedRows, selectedRows])
 
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
