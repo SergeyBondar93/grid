@@ -227,7 +227,7 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field]
     const expandLevel = !columnIndex && mappedRows[rowIndex].expandLevel || 0;
-    const isExpandable = columns[columnIndex].isExpandable;
+    const isExpandable = mappedColumns[columnIndex].isExpandable;
 
     const handleExpand = (e) => {
       onChangeExpand(rowIndex, mappedRows[rowIndex].children)
@@ -270,8 +270,10 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
     if (cache.current) cache.current.clearAll();
-  }, [mappedColumns, mappedRows])
+  }, [mappedColumns, mappedRows]);
 
+
+  console.log(mappedColumns)
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
       <HeaderWrapper fullWidth={fullWidth.current} columns={mappedColumns} translateX={scrollLeft} onChangeWidth={handleChangeWidth} onChangeMoving={handleChangeMoving} />
