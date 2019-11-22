@@ -5,7 +5,7 @@ import { setIn } from 'utilitify'
 import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 
-const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
+const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
   const [newWidth, changeNewWidth] = useState(width)
   const clickX = useRef(0);
   const widthRef = useRef(width)
@@ -53,17 +53,110 @@ const HeaderCellWrapper = ({ text, width, onChangeWidth, index }) => {
 
   return (
     <HeaderCell style={{ width: `${newWidth}px` }} >
-      <span >
-        {text}
-      </span>
+      <div style={{ width: '100%', height: '100%', backgroundColor: isEmpty ? 'lightblue' : 'yellow' }} onMouseDown={(e) => onMouseDown(e, index)} >
+        <span >
+
+          {isEmpty ? null : text}
+        </span>
+      </div>
       <RightBorder onMouseDown={handleMouseDown} />
     </HeaderCell>
   )
 }
 
-const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth }) => {
-  return <Header style={{ width: `${fullWidth}px`, transform: `translateX(${-translateX}px)` }} >
-    {columns.map((el, index) => <HeaderCellWrapper width={el.width} text={el.headerName} onChangeWidth={onChangeWidth} index={index} />)}
+const HeaderWrapper = ({ fullWidth, translateX, columns, onChangeWidth, onChangeMoving }) => {
+  const mappedColumns = useRef(columns)
+  const [isMoving, changeIsMoving] = useState(false)
+  const clickX = useRef(0);
+  const movingColumnIndex = useRef();
+  const movingColumnData = useRef(null);
+  const headerRef = useRef();
+  const emptyColumn = useRef(null);
+  const [mouseMove, changeMouseMove] = useState(0);
+  const [startCoord, changeStartCoord] = useState(0)
+  const startClickX = useRef(0)
+
+
+  const handleMouseMove = (e) => {
+    const { clientX } = e
+    const movingElem = e.target.getBoundingClientRect();
+    const moveMouse = clientX - clickX.current;
+    const headerRect = headerRef.current.getBoundingClientRect();
+    if (moveMouse < 0) {
+
+      if (movingElem.left <= headerRect.left) return
+      if (columns[emptyColumn.current - 1]) {
+        if (-moveMouse >= (columns[emptyColumn.current - 1].width)) {
+          clickX.current -= columns[emptyColumn.current].width
+          let newMappedColumns = [...mappedColumns.current];
+          [newMappedColumns[emptyColumn.current], newMappedColumns[emptyColumn.current - 1]] = [newMappedColumns[emptyColumn.current - 1], newMappedColumns[emptyColumn.current]]
+          mappedColumns.current = newMappedColumns
+          emptyColumn.current = emptyColumn.current - 1;
+        }
+      }
+    } else if (moveMouse > 0) {
+      if (movingElem.right >= headerRect.right) return
+      if (columns[emptyColumn.current + 1]) {
+
+        if (moveMouse >= (columns[emptyColumn.current + 1].width)) {
+          clickX.current += columns[emptyColumn.current].width
+          let newMappedColumns = [...mappedColumns.current];
+          [newMappedColumns[emptyColumn.current], newMappedColumns[emptyColumn.current + 1]] = [newMappedColumns[emptyColumn.current + 1], newMappedColumns[emptyColumn.current]]
+          mappedColumns.current = newMappedColumns
+          emptyColumn.current = emptyColumn.current + 1;
+        }
+
+
+
+      }
+    }
+    changeMouseMove(clientX - startClickX.current)
+
+  }
+
+
+  const handleMouseUp = (e) => {
+    changeIsMoving(false)
+    changeMouseMove(0);
+    emptyColumn.current = null
+    changeStartCoord(0);
+    onChangeMoving(mappedColumns.current)
+    movingColumnIndex.current = 0;
+    movingColumnData.current = null
+    document.body.removeEventListener('mouseup', handleMouseUp);
+    document.body.removeEventListener('mousemove', handleMouseMove);
+  };
+
+
+  const handleMouseDown = (e, i) => {
+    clickX.current = e.clientX;
+    startClickX.current = e.clientX
+    const coords = e.target.getBoundingClientRect();
+    changeStartCoord(coords.left - headerRef.current.getBoundingClientRect().left);
+    changeIsMoving(true);
+    movingColumnIndex.current = i;
+    emptyColumn.current = i;
+    movingColumnData.current = mappedColumns.current[i];
+    document.body.addEventListener('mouseup', handleMouseUp);
+    document.body.addEventListener('mousemove', handleMouseMove);
+  }
+
+
+  return <Header ref={headerRef} style={{ width: `${fullWidth}px`, transform: `translateX(${-translateX}px)` }} >
+    {columns.map((el, index) => <HeaderCellWrapper isEmpty={index === emptyColumn.current} onMouseDown={handleMouseDown} width={el.width} text={el.headerName} onChangeWidth={onChangeWidth} index={index} />)}
+    {isMoving &&
+      <div
+        style={{
+          position: "relative",
+          left: `${startCoord}px`,
+          transform: `translateX(${mouseMove}px)`,
+          width: `${movingColumnData.current.width}px`,
+          height: '50px',
+          outline: '1px solid black'
+        }}
+      >
+        {movingColumnData.current.headerName}
+      </div>}
   </Header>
 }
 
@@ -86,7 +179,7 @@ const addOrDeleteItemFromArray = (array, item) => {
 
 
 
-const App = ({ rows, columns, width, height, select = 'multi' }) => {
+const App = ({ rows, columns, width, height, select = 'one' }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([])
@@ -170,6 +263,9 @@ const App = ({ rows, columns, width, height, select = 'multi' }) => {
     fullWidth.current = newColumns.reduce((acc, { width }) => acc += width, 0)
   }, [mappedColumns])
 
+  const handleChangeMoving = useCallback(newColumns => {
+    changeMappedColumns(newColumns)
+  }, [])
 
   useEffect(() => {
     if (gridRef.current) gridRef.current.recomputeGridSize();
@@ -178,7 +274,7 @@ const App = ({ rows, columns, width, height, select = 'multi' }) => {
 
   return (
     <div style={{ width: `${width}px`, overflow: 'hidden' }} >
-      <HeaderWrapper fullWidth={fullWidth.current} columns={mappedColumns} translateX={scrollLeft} onChangeWidth={handleChangeWidth} />
+      <HeaderWrapper fullWidth={fullWidth.current} columns={mappedColumns} translateX={scrollLeft} onChangeWidth={handleChangeWidth} onChangeMoving={handleChangeMoving} />
       <Body>
         <Grid
           ref={gridRef}
