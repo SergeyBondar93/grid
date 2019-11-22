@@ -221,7 +221,7 @@ const App = ({ rows, columns, width, height, select = 'one' }) => {
     if (e.target.tagName === 'BUTTON') return
 
     if (select === 'multi') changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
-    if (select === 'one') changeSelectedRows([key]);
+    if (select === 'one') selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
   }
 
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
