@@ -26,50 +26,61 @@ export const HeaderWrapper = ({
     mappedColumns.current = columns;
   }, [columns]);
 
-  const handleMouseMove = e => {
-    const { clientX } = e;
-    const movingElem = e.target.getBoundingClientRect();
-    const moveMouse = clientX - clickX.current;
-    const headerRect = headerRef.current.getBoundingClientRect();
-    if (moveMouse < 0) {
-      if (movingElem.left <= headerRect.left) return;
-      if (mappedColumns.current[emptyColumn.current - 1]) {
-        if (
-          -moveMouse >= mappedColumns.current[emptyColumn.current - 1].width
-        ) {
-          clickX.current -= mappedColumns.current[emptyColumn.current].width;
-          let newMappedColumns = [...mappedColumns.current];
-          [
-            newMappedColumns[emptyColumn.current],
-            newMappedColumns[emptyColumn.current - 1]
-          ] = [
-            newMappedColumns[emptyColumn.current - 1],
-            newMappedColumns[emptyColumn.current]
-          ];
-          mappedColumns.current = newMappedColumns;
-          emptyColumn.current = emptyColumn.current - 1;
+  const handleMouseMove = useCallback(
+    e => {
+      const { clientX } = e;
+      const movingElem = e.target.getBoundingClientRect();
+      const moveMouse = clientX - clickX.current;
+      const headerRect = headerRef.current.getBoundingClientRect();
+      if (moveMouse < 0) {
+        if (movingElem.left <= headerRect.left) return;
+        if (mappedColumns.current[emptyColumn.current - 1]) {
+          if (
+            -moveMouse >= mappedColumns.current[emptyColumn.current - 1].width
+          ) {
+            clickX.current -=
+              mappedColumns.current[emptyColumn.current].width - 1;
+            let newMappedColumns = [...mappedColumns.current];
+            [
+              newMappedColumns[emptyColumn.current],
+              newMappedColumns[emptyColumn.current - 1]
+            ] = [
+              newMappedColumns[emptyColumn.current - 1],
+              newMappedColumns[emptyColumn.current]
+            ];
+            mappedColumns.current = newMappedColumns;
+            emptyColumn.current = emptyColumn.current - 1;
+          }
+        }
+      } else if (moveMouse > 0) {
+        if (movingElem.right >= headerRect.right) return;
+        if (mappedColumns.current[emptyColumn.current + 1]) {
+          if (
+            moveMouse >= mappedColumns.current[emptyColumn.current + 1].width
+          ) {
+            console.log(
+              moveMouse,
+              mappedColumns.current[emptyColumn.current + 1].width
+            );
+            clickX.current +=
+              mappedColumns.current[emptyColumn.current].width + 1;
+            let newMappedColumns = [...mappedColumns.current];
+            [
+              newMappedColumns[emptyColumn.current],
+              newMappedColumns[emptyColumn.current + 1]
+            ] = [
+              newMappedColumns[emptyColumn.current + 1],
+              newMappedColumns[emptyColumn.current]
+            ];
+            mappedColumns.current = newMappedColumns;
+            emptyColumn.current = emptyColumn.current + 1;
+          }
         }
       }
-    } else if (moveMouse > 0) {
-      if (movingElem.right >= headerRect.right) return;
-      if (mappedColumns.current[emptyColumn.current + 1]) {
-        if (moveMouse >= mappedColumns.current[emptyColumn.current + 1].width) {
-          clickX.current += mappedColumns.current[emptyColumn.current].width;
-          let newMappedColumns = [...mappedColumns.current];
-          [
-            newMappedColumns[emptyColumn.current],
-            newMappedColumns[emptyColumn.current + 1]
-          ] = [
-            newMappedColumns[emptyColumn.current + 1],
-            newMappedColumns[emptyColumn.current]
-          ];
-          mappedColumns.current = newMappedColumns;
-          emptyColumn.current = emptyColumn.current + 1;
-        }
-      }
-    }
-    changeMouseMove(clientX - startClickX.current);
-  };
+      changeMouseMove(clientX - startClickX.current);
+    },
+    [mappedColumns.current, clickX.current]
+  );
 
   const handleMouseUp = e => {
     changeIsMoving(false);
