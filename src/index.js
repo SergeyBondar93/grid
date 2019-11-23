@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
 
-const width = 150
+const width = 150;
 
 const columns = [
   { width, headerName: "Number row", field: "row" },
@@ -20,11 +20,9 @@ const columns = [
   { width, headerName: "Col 8", field: "col7" },
   { width, headerName: "Col 9", field: "col8" },
   { width, headerName: "Col 10", field: "col10" }
-]
+];
 
-
-
-export const generateLorem = (n) => {
+export const generateLorem = n => {
   const text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
     Mauris tristique tortor quam, eget iaculis dolor facilisis vitae. Aenean et blandit sapien. 
     Quisque sed placerat tortor, egestas tincidunt arcu. Quisque ac justo eu lacus imperdiet 
@@ -33,22 +31,20 @@ export const generateLorem = (n) => {
     Morbi urna enim, sollicitudin vel commodo sed, pellentesque in velit. Phasellus aliquet lectus
      eu nunc sollicitudin tempus. Aliquam a turpis eget ex imperdiet ullamcorper vitae id nisi. 
      Donec rhoncus elit sit amet sodales efficitur. Nam iaculis, est et gravida congue, mauris nulla
-      pulvinar sem, ac congue dui nisl vitae orci. Aliquam venenatis nunc sit amet dignissim viverra.`
-  const words = text.split(' ').slice(0, 100);
-  if (n < 100) return words.slice(0, n).join(' ')
-  const mult = +String(n / 100).split('.')[0];
+      pulvinar sem, ac congue dui nisl vitae orci. Aliquam venenatis nunc sit amet dignissim viverra.`;
+  const words = text.split(" ").slice(0, 100);
+  if (n < 100) return words.slice(0, n).join(" ");
+  const mult = +String(n / 100).split(".")[0];
   const remains = n % 100;
   const res = [];
   for (let i = 0; i < mult; i++) {
     res.push(text);
   }
-  res.push(words.slice(0, remains).join(' '))
-  return res.join(' ')
-}
+  res.push(words.slice(0, remains).join(" "));
+  return res.join(" ");
+};
 
-
-const createDublicateRows = (n) => {
-
+const createDublicateRows = n => {
   const res = [];
   for (let i = 0; i < n; i++) {
     res.push({
@@ -66,12 +62,12 @@ const createDublicateRows = (n) => {
       col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
       col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
       row: i
-    })
+    });
   }
-  return res
-}
+  return res;
+};
 
-const rows = createDublicateRows(100)
+const rows = createDublicateRows(100);
 
 const rowsWidthChildren = [
   {
@@ -104,7 +100,7 @@ const rowsWidthChildren = [
         col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
         col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
         col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-        row: 1.1,
+        row: 1.1
       },
       {
         price: Math.floor(Math.random() * 100000 + 10000),
@@ -120,7 +116,7 @@ const rowsWidthChildren = [
         col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
         col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
         col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-        row: 1.2,
+        row: 1.2
       }
     ]
   },
@@ -138,7 +134,7 @@ const rowsWidthChildren = [
     col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
     col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
     col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-    row: 2,
+    row: 2
   },
   {
     price: Math.floor(Math.random() * 100000 + 10000),
@@ -170,7 +166,7 @@ const rowsWidthChildren = [
         col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
         col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
         col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-        row: 3.1,
+        row: 3.1
       },
       {
         price: Math.floor(Math.random() * 100000 + 10000),
@@ -202,7 +198,7 @@ const rowsWidthChildren = [
             col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
             col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
             col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-            row: '3.2.1',
+            row: "3.2.1"
           },
           {
             price: Math.floor(Math.random() * 100000 + 10000),
@@ -218,7 +214,7 @@ const rowsWidthChildren = [
             col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
             col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
             col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-            row: '3.2.2',
+            row: "3.2.2",
             children: [
               {
                 price: Math.floor(Math.random() * 100000 + 10000),
@@ -234,7 +230,7 @@ const rowsWidthChildren = [
                 col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
                 col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
                 col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-                row: '3.2.2.1',
+                row: "3.2.2.1"
               },
               {
                 price: Math.floor(Math.random() * 100000 + 10000),
@@ -250,7 +246,7 @@ const rowsWidthChildren = [
                 col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
                 col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
                 col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-                row: '3.2.2.2',
+                row: "3.2.2.2",
                 children: [
                   {
                     price: Math.floor(Math.random() * 100000 + 10000),
@@ -266,7 +262,7 @@ const rowsWidthChildren = [
                     col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
                     col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
                     col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-                    row: '3.2.2.2.1',
+                    row: "3.2.2.2.1"
                   },
                   {
                     price: Math.floor(Math.random() * 100000 + 10000),
@@ -282,7 +278,7 @@ const rowsWidthChildren = [
                     col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
                     col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
                     col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-                    row: '3.2.2.2.2',
+                    row: "3.2.2.2.2"
                   }
                 ]
               }
@@ -306,7 +302,7 @@ const rowsWidthChildren = [
     col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
     col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
     col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-    row: 4,
+    row: 4
   },
   {
     price: Math.floor(Math.random() * 100000 + 10000),
@@ -322,12 +318,17 @@ const rowsWidthChildren = [
     col7: generateLorem(Math.floor(Math.random() * 2 + 1)),
     col8: generateLorem(Math.floor(Math.random() * 0 + 1)),
     col10: generateLorem(Math.floor(Math.random() * 10 + 1)),
-    row: 5,
+    row: 5
   }
-]
-
-
-
+];
 
 // ReactDOM.render(<App columns={columns} rows={rowsWidthChildren} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
-ReactDOM.render(<App columns={columns} rows={rowsWidthChildren} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
+ReactDOM.render(
+  <App
+    columns={columns}
+    rows={rows}
+    width={document.documentElement.clientWidth}
+    height={document.documentElement.clientHeight}
+  />,
+  document.getElementById("root")
+);
