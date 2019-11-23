@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import { RightBorder, HeaderCell } from "./styleds";
 
 export const HeaderCellWrapper = ({
@@ -12,6 +12,10 @@ export const HeaderCellWrapper = ({
   const [newWidth, changeNewWidth] = useState(width);
   const clickX = useRef(0);
   const widthRef = useRef(width);
+
+  useEffect(() => {
+    changeNewWidth(width);
+  }, [width]);
 
   const handleMouseMove = useCallback(
     e => {

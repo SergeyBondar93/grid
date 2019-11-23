@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo
-} from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Body, BodyCell } from "./styleds";
 import { guid, addOrDeleteItemFromArray } from "./utils";
 import { Grid } from "react-virtualized";
@@ -137,7 +131,6 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
     },
     [mappedColumns]
   );
-
   const handleChangeMoving = useCallback(newColumns => {
     changeMappedColumns(newColumns);
   }, []);

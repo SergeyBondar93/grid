@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { HeaderCellWrapper } from "./HeaderCell";
 import { Header } from "./styleds";
+
+const useForceUpdate = () => useState()[1];
 
 export const HeaderWrapper = ({
   fullWidth,
@@ -10,7 +12,6 @@ export const HeaderWrapper = ({
   onChangeMoving
 }) => {
   const mappedColumns = useRef(columns);
-  // console.log(mappedColumns.current);
   const [isMoving, changeIsMoving] = useState(false);
   const clickX = useRef(0);
   const movingColumnIndex = useRef();
@@ -23,7 +24,6 @@ export const HeaderWrapper = ({
 
   useEffect(() => {
     mappedColumns.current = columns;
-    console.log(columns);
   }, [columns]);
 
   const handleMouseMove = e => {
@@ -33,9 +33,11 @@ export const HeaderWrapper = ({
     const headerRect = headerRef.current.getBoundingClientRect();
     if (moveMouse < 0) {
       if (movingElem.left <= headerRect.left) return;
-      if (columns[emptyColumn.current - 1]) {
-        if (-moveMouse >= columns[emptyColumn.current - 1].width) {
-          clickX.current -= columns[emptyColumn.current].width;
+      if (mappedColumns.current[emptyColumn.current - 1]) {
+        if (
+          -moveMouse >= mappedColumns.current[emptyColumn.current - 1].width
+        ) {
+          clickX.current -= mappedColumns.current[emptyColumn.current].width;
           let newMappedColumns = [...mappedColumns.current];
           [
             newMappedColumns[emptyColumn.current],
@@ -50,9 +52,9 @@ export const HeaderWrapper = ({
       }
     } else if (moveMouse > 0) {
       if (movingElem.right >= headerRect.right) return;
-      if (columns[emptyColumn.current + 1]) {
-        if (moveMouse >= columns[emptyColumn.current + 1].width) {
-          clickX.current += columns[emptyColumn.current].width;
+      if (mappedColumns.current[emptyColumn.current + 1]) {
+        if (moveMouse >= mappedColumns.current[emptyColumn.current + 1].width) {
+          clickX.current += mappedColumns.current[emptyColumn.current].width;
           let newMappedColumns = [...mappedColumns.current];
           [
             newMappedColumns[emptyColumn.current],
@@ -80,12 +82,10 @@ export const HeaderWrapper = ({
     document.body.removeEventListener("mouseup", handleMouseUp);
     document.body.removeEventListener("mousemove", handleMouseMove);
   };
-
   const handleMouseDown = (e, i) => {
     clickX.current = e.clientX;
     startClickX.current = e.clientX;
     const coords = e.target.getBoundingClientRect();
-    console.log(coords);
     changeStartCoord({
       x: coords.left - headerRef.current.getBoundingClientRect().left,
       y: coords.y,
@@ -115,6 +115,7 @@ export const HeaderWrapper = ({
           text={el.headerName}
           onChangeWidth={onChangeWidth}
           index={index}
+          // key={Math.random()}
         />
       ))}
       {isMoving && (
