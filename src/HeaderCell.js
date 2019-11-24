@@ -1,14 +1,7 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { RightBorder, HeaderCell } from "./styleds";
 
-export const HeaderCellWrapper = ({
-  text,
-  width,
-  onChangeWidth,
-  index,
-  onMouseDown,
-  isEmpty
-}) => {
+export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
   const [newWidth, changeNewWidth] = useState(width);
   const clickX = useRef(0);
   const widthRef = useRef(width);
@@ -55,7 +48,8 @@ export const HeaderCellWrapper = ({
     <HeaderCell style={{ width: `${newWidth}px` }}>
       <div
         style={{
-          width: "100%",
+          width: "calc(100% - 6px)",
+          overflow: "hidden",
           height: "38px" /* решить как то растягивание на 100% высоты */,
           backgroundColor: isEmpty ? "lightblue" : "yellow"
         }}
