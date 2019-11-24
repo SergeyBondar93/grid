@@ -9,7 +9,9 @@ export const HeaderWrapper = ({
   translateX,
   columns,
   onChangeWidth,
-  onChangeMoving
+  onChangeMoving,
+  visibleWidth,
+  changeTransform
 }) => {
   const mappedColumns = useRef(columns);
   const [isMoving, changeIsMoving] = useState(false);
@@ -32,13 +34,12 @@ export const HeaderWrapper = ({
       const movingElem = e.target.getBoundingClientRect();
 
       const moveMouse = clientX - clickX.current;
-      console.log(
-        "!!!!!!!!!! Вычли ",
-        clientX,
-        clickX.current,
-        "результат ",
-        clientX - clickX.current
-      );
+
+      // if (clientX > visibleWidth - 200) {
+      //   console.log("двинуть вправо на", clientX - (visibleWidth - 200));
+      //   changeTransform({ scrollLeft: translateX + (clientX - (visibleWidth - 200)) });
+      // }
+
       const headerRect = headerRef.current.getBoundingClientRect();
       if (moveMouse < 0) {
         if (movingElem.left <= headerRect.left) return;

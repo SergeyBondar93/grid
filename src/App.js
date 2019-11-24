@@ -9,13 +9,9 @@ import { HeaderWrapper } from "./HeaderWrapper";
 
 const App = ({ rows, columns, width, height, select = "one" }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
-  const [mappedRows, changeMappedRows] = useState(
-    rows.map(el => ({ ...el, key: guid() }))
-  );
+  const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([]);
-  const fullWidth = useRef(
-    mappedColumns.reduce((acc, { width }) => (acc += width), 0)
-  );
+  const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => (acc += width), 0));
   const [scrollLeft, changeScrollLeft] = useState(0);
   const gridRef = useRef();
   const cache = useRef(
@@ -26,6 +22,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
   );
 
   const handleScroll = e => {
+    console.log(e);
     changeScrollLeft(e.scrollLeft);
   };
 
@@ -62,12 +59,9 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
   const handleSelect = (e, key) => {
     if (e.target.tagName === "BUTTON") return;
 
-    if (select === "multi")
-      changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
+    if (select === "multi") changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
     if (select === "one")
-      selectedRows[0] === key
-        ? changeSelectedRows([])
-        : changeSelectedRows([key]);
+      selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
   };
 
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
@@ -80,8 +74,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
     };
 
     const checkSelected = () => {
-      if (selectedRows.some(key => key === mappedRows[rowIndex].key))
-        return "lightblue";
+      if (selectedRows.some(key => key === mappedRows[rowIndex].key)) return "lightblue";
       return;
     };
 
@@ -110,9 +103,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
             }}
           />
           {isExpandable && mappedRows[rowIndex].children ? (
-            <button onClick={handleExpand}>
-              {mappedRows[rowIndex].isExpand ? "-" : "+"}
-            </button>
+            <button onClick={handleExpand}>{mappedRows[rowIndex].isExpand ? "-" : "+"}</button>
           ) : null}
           <span>{content}</span>
         </BodyCell>
@@ -124,10 +115,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
     (index, width) => {
       const newColumns = setIn(mappedColumns, width, [index, "width"]);
       changeMappedColumns(newColumns);
-      fullWidth.current = newColumns.reduce(
-        (acc, { width }) => (acc += width),
-        0
-      );
+      fullWidth.current = newColumns.reduce((acc, { width }) => (acc += width), 0);
     },
     [mappedColumns]
   );
@@ -148,6 +136,8 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
         translateX={scrollLeft}
         onChangeWidth={handleChangeWidth}
         onChangeMoving={handleChangeMoving}
+        visibleWidth={width}
+        changeTransform={handleScroll}
       />
       <Body>
         <Grid
