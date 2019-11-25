@@ -31,6 +31,7 @@ export const BodyCell = styled.div`
   span {
     margin: 10px;
     display: inline-block;
+    overflow: hidden;
   }
   button {
     margin: 10px;
