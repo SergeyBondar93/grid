@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Body, BodyCell } from "./styleds";
+import { Body, BodyCell } from "./styles";
 import { guid, addOrDeleteItemFromArray } from "./utils";
 import { Grid } from "react-virtualized";
 import { setIn } from "utilitify";
@@ -22,7 +22,6 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
   );
 
   const handleScroll = e => {
-    console.log(e);
     changeScrollLeft(e.scrollLeft);
   };
 
@@ -54,7 +53,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
       const withNewExpand = setIn(newMappedRows, true, [index, "isExpand"]);
       changeMappedRows(withNewExpand);
     }
-  });
+  }, [mappedRows]);
 
   const handleSelect = (e, key) => {
     if (e.target.tagName === "BUTTON") return;

@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import { RightBorder, HeaderCell } from "./styleds";
+import { RightBorder, HeaderCell } from "./styles";
 
 export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
   const [newWidth, changeNewWidth] = useState(width);
@@ -23,7 +23,7 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
         widthRef.current = calcNewWidth;
       }
     },
-    [width, clickX.current]
+    [width]
   );
 
   const handleMouseUp = useCallback(
@@ -32,7 +32,7 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
       document.body.removeEventListener("mouseup", handleMouseUp);
       document.body.removeEventListener("mousemove", handleMouseMove);
     },
-    [handleMouseMove, index, newWidth, onChangeWidth]
+    [handleMouseMove, index, onChangeWidth]
   );
 
   const handleMouseDown = useCallback(
@@ -41,7 +41,7 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
       document.body.addEventListener("mouseup", handleMouseUp);
       document.body.addEventListener("mousemove", handleMouseMove);
     },
-    [handleMouseMove, index, newWidth, onChangeWidth]
+    [handleMouseMove, handleMouseUp]
   );
 
   return (
