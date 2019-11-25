@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import { RightBorder, HeaderCell } from "./styleds";
+import { RightBorder, HeaderCell } from "./styles";
 
-export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
+export const HeaderCellWrapper = ({ text, headerRef, fullWidth, width, onChangeWidth, onResize, index, onMouseDown, isEmpty }) => {
   const [newWidth, changeNewWidth] = useState(width);
   const clickX = useRef(0);
   const widthRef = useRef(width);
@@ -10,39 +10,36 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
     changeNewWidth(width);
   }, [width]);
 
-  const handleMouseMove = useCallback(
-    e => {
-      const { clientX: currentX } = e;
-      const calcNewWidth = width + (currentX - clickX.current);
-      if (calcNewWidth >= 1600) return;
-      else if (calcNewWidth <= 30) {
-        changeNewWidth(30);
-        widthRef.current = 30;
-      } else {
-        changeNewWidth(calcNewWidth);
-        widthRef.current = calcNewWidth;
-      }
-    },
-    [width, clickX.current]
-  );
+  const handleMouseMove = useCallback(e => {
+    const { clientX: currentX } = e;
+    const calcNewWidth = width + (currentX - clickX.current);
 
-  const handleMouseUp = useCallback(
-    e => {
-      onChangeWidth(index, widthRef.current);
-      document.body.removeEventListener("mouseup", handleMouseUp);
-      document.body.removeEventListener("mousemove", handleMouseMove);
-    },
-    [handleMouseMove, index, newWidth, onChangeWidth]
-  );
+    const headerRect = headerRef.current.getBoundingClientRect();
+    if (currentX - headerRect.left >= fullWidth - 30) return;
 
-  const handleMouseDown = useCallback(
-    e => {
-      clickX.current = e.clientX;
-      document.body.addEventListener("mouseup", handleMouseUp);
-      document.body.addEventListener("mousemove", handleMouseMove);
-    },
-    [handleMouseMove, index, newWidth, onChangeWidth]
-  );
+    if (calcNewWidth >= 1600) return;
+    else if (calcNewWidth <= 30) {
+      changeNewWidth(30);
+      onResize(index, 30);
+      widthRef.current = 30;
+    } else {
+      changeNewWidth(calcNewWidth);
+      onResize(index,calcNewWidth);
+      widthRef.current = calcNewWidth;
+    }
+  }, [fullWidth, headerRef, index, onResize, width]);
+
+  const handleMouseUp = useCallback(e => {
+    onChangeWidth(index, widthRef.current);
+    document.body.removeEventListener("mouseup", handleMouseUp);
+    document.body.removeEventListener("mousemove", handleMouseMove);
+  }, [handleMouseMove, index, onChangeWidth]);
+
+  const handleMouseDown = useCallback(e => {
+    clickX.current = e.clientX;
+    document.body.addEventListener("mouseup", handleMouseUp);
+    document.body.addEventListener("mousemove", handleMouseMove);
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <HeaderCell style={{ width: `${newWidth}px` }}>
