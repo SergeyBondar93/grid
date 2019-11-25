@@ -26,6 +26,7 @@ export const HeaderWrapper = ({
 
   useEffect(() => {
     mappedColumns.current = columns;
+    changeStartCoord({ x: 0, y: 0 });
   }, [columns]);
 
   const handleMouseMove = useCallback(
@@ -84,7 +85,7 @@ export const HeaderWrapper = ({
     changeIsMoving(false);
     changeMouseMove(0);
     emptyColumn.current = null;
-    changeStartCoord({ x: 0, y: 0 });
+    // changeStartCoord({ x: 0, y: 0 });
     onChangeMoving(mappedColumns.current);
     movingColumnIndex.current = 0;
     movingColumnData.current = null;
