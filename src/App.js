@@ -54,7 +54,7 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
       const withNewExpand = setIn(newMappedRows, true, [index, "isExpand"]);
       changeMappedRows(withNewExpand);
     }
-  });
+  }, [mappedRows]);
 
   const handleSelect = (e, key) => {
     if (e.target.tagName === "BUTTON") return;
@@ -111,14 +111,12 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
     );
   };
 
-  const handleChangeWidth = useCallback(
-    (index, width) => {
-      const newColumns = setIn(mappedColumns, width, [index, "width"]);
-      changeMappedColumns(newColumns);
-      fullWidth.current = newColumns.reduce((acc, { width }) => (acc += width), 0);
-    },
-    [mappedColumns]
-  );
+  const handleChangeWidth = useCallback((index, width) => {
+    const newColumns = setIn(mappedColumns, width, [index, "width"]);
+    fullWidth.current = newColumns.reduce((acc, { width }) => (acc += width), 0);
+    changeMappedColumns(newColumns);
+  }, [mappedColumns]);
+
   const handleChangeMoving = useCallback(newColumns => {
     changeMappedColumns(newColumns);
   }, []);
