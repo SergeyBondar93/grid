@@ -4,7 +4,7 @@ export const Header = styled.div`
   /* display: flex; */
   height: 39px;
   overflow: hidden;
-
+  width: 200%;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */

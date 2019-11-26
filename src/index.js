@@ -327,7 +327,7 @@ ReactDOM.render(
   <App
     columns={columns}
     rows={rows}
-    width={document.documentElement.clientWidth}
+    width={600}
     height={document.documentElement.clientHeight}
   />,
   document.getElementById("root")

@@ -113,7 +113,7 @@ export const HeaderWrapper = ({
     <Header
       ref={headerRef}
       style={{
-        width: `${fullWidth}px`,
+        width: ` calc(${fullWidth}px + 100%)`,
         transform: `translateX(${-translateX}px)`
       }}
     >
