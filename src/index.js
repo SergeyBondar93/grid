@@ -327,8 +327,8 @@ ReactDOM.render(
     columns={JSON.parse(localStorage.getItem('колонки')) || columns}
     // rows={rows}
     rows={rowsWithChildren}
-    width={document.documentElement.clientWidth}
-    height={document.documentElement.clientHeight}
+    width={800}
+    height={800}
     onChangeColumns={(columns) => localStorage.setItem('колонки', JSON.stringify(columns))}
   />,
   document.getElementById("root")
