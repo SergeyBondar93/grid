@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import { RightBorder, HeaderCell } from "./styleds";
+import { RightBorder, HeaderCell, HeaderCellContent } from "./styleds";
 
 export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
   const [newWidth, changeNewWidth] = useState(width);
@@ -46,16 +46,12 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
 
   return (
     <HeaderCell style={{ width: `${newWidth}px` }}>
-      <div
-        style={{
-          width: "calc(100% - 6px)",
-          overflow: "hidden",
-          backgroundColor: isEmpty ? "lightblue" : "yellow"
-        }}
+      <HeaderCellContent
+        isEmpty={isEmpty}
         onMouseDown={e => onMouseDown(e, index)}
       >
         <span>{isEmpty ? null : text}</span>
-      </div>
+      </HeaderCellContent>
       <RightBorder onMouseDown={handleMouseDown} />
     </HeaderCell>
   );

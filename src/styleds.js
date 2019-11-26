@@ -90,3 +90,10 @@ export const Wrapper = styled.div`
   width: ${({ width }) => `${width}px`} ;
   overflow: hidden;
 `
+
+
+export const HeaderCellContent = styled.div`
+  width: calc(100% - 6px);
+  overflow: hidden;
+  background-color: ${({ isEmpty }) => isEmpty ? "lightblue" : "yellow"};
+`

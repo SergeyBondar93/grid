@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { HeaderCellWrapper } from "./HeaderCell";
 import { Header } from "./styleds";
 
-const useForceUpdate = () => useState()[1];
 
 export const HeaderWrapper = ({
   fullWidth,
@@ -10,8 +9,6 @@ export const HeaderWrapper = ({
   columns,
   onChangeWidth,
   onChangeMoving,
-  visibleWidth,
-  changeTransform
 }) => {
   const mappedColumns = useRef(columns);
   const [isMoving, changeIsMoving] = useState(false);
@@ -77,16 +74,16 @@ export const HeaderWrapper = ({
   );
 
   const handleMouseUp = e => {
+    emptyColumnIndex.current = null;
     changeIsMoving(false);
     changeMouseMove(0);
-    emptyColumnIndex.current = null;
-    // changeStartCoord({ x: 0, y: 0 });
     onChangeMoving(mappedColumns.current);
     movingColumnIndex.current = 0;
     movingColumnData.current = null;
     document.removeEventListener("mouseup", handleMouseUp);
     document.removeEventListener("mousemove", handleMouseMove);
   };
+
   const handleMouseDown = (e, i) => {
     clickX.current = e.clientX;
     startClickX.current = e.clientX;
