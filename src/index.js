@@ -69,7 +69,7 @@ const createDublicateRows = n => {
 
 const rows = createDublicateRows(100);
 
-const rowsWidthChildren = [
+const rowsWithChildren = [
   {
     price: Math.floor(Math.random() * 100000 + 10000),
     make: generateLorem(Math.floor(Math.random() * 40 + 1)),
@@ -325,7 +325,8 @@ const rowsWidthChildren = [
 ReactDOM.render(
   <App
     columns={JSON.parse(localStorage.getItem('колонки')) || columns}
-    rows={rows}
+    // rows={rows}
+    rows={rowsWithChildren}
     width={document.documentElement.clientWidth}
     height={document.documentElement.clientHeight}
     onChangeColumns={(columns) => localStorage.setItem('колонки', JSON.stringify(columns))}

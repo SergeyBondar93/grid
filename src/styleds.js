@@ -69,3 +69,24 @@ export const AntiSelect = styled.div`
   z-index: 9999999;
   background-color: rgba(255, 0, 0, 0.5);
 `;
+
+
+export const BodyCellContent = styled.div`
+  width: ${({ expandLevel }) => `calc(100% - ${expandLevel * 20}px)`}; 
+`;
+
+
+export const BodyCellOffset = styled.div`
+  width: ${({ expandLevel }) => `${expandLevel * 20}px`};
+`
+export const ExpandButtonWrapper = styled.div`
+  width: 16px;
+  height: 16px;
+  border: none;
+  outline: none;
+  margin-left: 5px ;
+`
+export const Wrapper = styled.div`
+  width: ${({ width }) => `${width}px`} ;
+  overflow: hidden;
+`

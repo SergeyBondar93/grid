@@ -29,8 +29,8 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
   const handleMouseUp = useCallback(
     e => {
       onChangeWidth(index, widthRef.current);
-      document.body.removeEventListener("mouseup", handleMouseUp);
-      document.body.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
     },
     [handleMouseMove, index, newWidth, onChangeWidth]
   );
@@ -38,8 +38,8 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
   const handleMouseDown = useCallback(
     e => {
       clickX.current = e.clientX;
-      document.body.addEventListener("mouseup", handleMouseUp);
-      document.body.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
     },
     [handleMouseMove, index, newWidth, onChangeWidth]
   );
@@ -50,7 +50,6 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
         style={{
           width: "calc(100% - 6px)",
           overflow: "hidden",
-          height: "38px" /* решить как то растягивание на 100% высоты */,
           backgroundColor: isEmpty ? "lightblue" : "yellow"
         }}
         onMouseDown={e => onMouseDown(e, index)}

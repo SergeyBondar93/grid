@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Body, BodyCell } from "./styleds";
+import { Body, BodyCell, BodyCellOffset, BodyCellContent, ExpandButtonWrapper, Wrapper } from "./styleds";
 import { guid, addOrDeleteItemFromArray } from "./utils";
 import { Grid } from "react-virtualized";
 import { setIn } from "utilitify";
 import { CellMeasurer, CellMeasurerCache } from "react-virtualized";
+import PlusBoxOutlineIcon from 'mdi-react/PlusBoxOutlineIcon';
+import MinusBoxOutlineIcon from 'mdi-react/MinusBoxOutlineIcon';
+
+
 
 import { HeaderWrapper } from "./HeaderWrapper";
 
@@ -17,6 +21,7 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
   const cache = useRef(
     new CellMeasurerCache({
       fixedWidth: true,
+      defaultHeight: 100
     })
   );
 
@@ -56,7 +61,6 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
 
   const handleSelect = (e, key) => {
     if (e.target.tagName === "BUTTON") return;
-
     if (select === "multi") changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
     if (select === "one")
       selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
@@ -93,19 +97,19 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
             width: mappedColumns[columnIndex].width
           }}
         >
-          <div
-            style={{
-              width: `${expandLevel * 20}px`,
-              height: "20px",
-              backgroundColor: "red"
-            }}
+          <BodyCellOffset
+            expandLevel={expandLevel}
           />
           {isExpandable && mappedRows[rowIndex].children ? (
-            <button onClick={handleExpand}>{mappedRows[rowIndex].isExpand ? "-" : "+"}</button>
+            <ExpandButtonWrapper onClick={handleExpand}>{mappedRows[rowIndex].isExpand ? <MinusBoxOutlineIcon size='16' /> : <PlusBoxOutlineIcon size='16' />}</ExpandButtonWrapper>
           ) : null}
-          <span>{content}</span>
+
+
+          <BodyCellContent expandLevel={expandLevel} >
+            <span>{content}</span>
+          </BodyCellContent>
         </BodyCell>
-      </CellMeasurer>
+      </CellMeasurer >
     );
   };
 
@@ -129,7 +133,7 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
   }, [mappedColumns, mappedRows]);
 
   return (
-    <div style={{ width: `${width}px`, overflow: "hidden" }}>
+    <Wrapper width={width} >
       <HeaderWrapper
         fullWidth={fullWidth.current}
         columns={mappedColumns}
@@ -153,7 +157,7 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
           onScroll={handleScroll}
         />
       </Body>
-    </div>
+    </Wrapper>
   );
 };
 

@@ -18,8 +18,9 @@ export const HeaderWrapper = ({
   const clickX = useRef(0);
   const movingColumnIndex = useRef();
   const movingColumnData = useRef(null);
+  const movingElemRect = useRef()
   const headerRef = useRef();
-  const emptyColumn = useRef(null);
+  const emptyColumnIndex = useRef(null);
   const [mouseMove, changeMouseMove] = useState(0);
   const [startCoord, changeStartCoord] = useState({ x: 0, y: 0 });
   const startClickX = useRef(0);
@@ -32,47 +33,41 @@ export const HeaderWrapper = ({
   const handleMouseMove = useCallback(
     e => {
       const { clientX } = e;
-      const movingElem = e.target.getBoundingClientRect();
-
       const moveMouse = clientX - clickX.current;
 
-      // if (clientX > visibleWidth - 200) {
-      //   console.log("двинуть вправо на", clientX - (visibleWidth - 200));
-      //   changeTransform({ scrollLeft: translateX + (clientX - (visibleWidth - 200)) });
-      // }
-
       const headerRect = headerRef.current.getBoundingClientRect();
+
       if (moveMouse < 0) {
-        if (movingElem.left <= headerRect.left) return;
-        if (mappedColumns.current[emptyColumn.current - 1]) {
-          if (-moveMouse >= mappedColumns.current[emptyColumn.current - 1].width / 2) {
-            clickX.current -= mappedColumns.current[emptyColumn.current - 1].width;
+        if (movingElemRect.current.left <= headerRect.left) return;
+        if (mappedColumns.current[emptyColumnIndex.current - 1]) {
+          if (-moveMouse >= mappedColumns.current[emptyColumnIndex.current - 1].width / 2) {
+            clickX.current -= mappedColumns.current[emptyColumnIndex.current - 1].width;
 
             let newMappedColumns = [...mappedColumns.current];
 
-            [newMappedColumns[emptyColumn.current], newMappedColumns[emptyColumn.current - 1]] = [
-              newMappedColumns[emptyColumn.current - 1],
-              newMappedColumns[emptyColumn.current]
+            [newMappedColumns[emptyColumnIndex.current], newMappedColumns[emptyColumnIndex.current - 1]] = [
+              newMappedColumns[emptyColumnIndex.current - 1],
+              newMappedColumns[emptyColumnIndex.current]
             ];
 
             mappedColumns.current = newMappedColumns;
-            emptyColumn.current = emptyColumn.current - 1;
+            emptyColumnIndex.current = emptyColumnIndex.current - 1;
           }
         }
       } else if (moveMouse > 0) {
-        if (movingElem.right >= headerRect.right) return;
-        if (mappedColumns.current[emptyColumn.current + 1]) {
-          if (moveMouse >= mappedColumns.current[emptyColumn.current + 1].width / 2) {
-            clickX.current += mappedColumns.current[emptyColumn.current + 1].width;
+        if (movingElemRect.current.right >= headerRect.right) return;
+        if (mappedColumns.current[emptyColumnIndex.current + 1]) {
+          if (moveMouse >= mappedColumns.current[emptyColumnIndex.current + 1].width / 2) {
+            clickX.current += mappedColumns.current[emptyColumnIndex.current + 1].width;
             let newMappedColumns = [...mappedColumns.current];
 
-            [newMappedColumns[emptyColumn.current], newMappedColumns[emptyColumn.current + 1]] = [
-              newMappedColumns[emptyColumn.current + 1],
-              newMappedColumns[emptyColumn.current]
+            [newMappedColumns[emptyColumnIndex.current], newMappedColumns[emptyColumnIndex.current + 1]] = [
+              newMappedColumns[emptyColumnIndex.current + 1],
+              newMappedColumns[emptyColumnIndex.current]
             ];
 
             mappedColumns.current = newMappedColumns;
-            emptyColumn.current = emptyColumn.current + 1;
+            emptyColumnIndex.current = emptyColumnIndex.current + 1;
           }
         }
       }
@@ -84,13 +79,13 @@ export const HeaderWrapper = ({
   const handleMouseUp = e => {
     changeIsMoving(false);
     changeMouseMove(0);
-    emptyColumn.current = null;
+    emptyColumnIndex.current = null;
     // changeStartCoord({ x: 0, y: 0 });
     onChangeMoving(mappedColumns.current);
     movingColumnIndex.current = 0;
     movingColumnData.current = null;
-    document.body.removeEventListener("mouseup", handleMouseUp);
-    document.body.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener("mousemove", handleMouseMove);
   };
   const handleMouseDown = (e, i) => {
     clickX.current = e.clientX;
@@ -102,11 +97,12 @@ export const HeaderWrapper = ({
       height: coords.height
     });
     changeIsMoving(true);
+    movingElemRect.current = e.target.getBoundingClientRect();
     movingColumnIndex.current = i;
-    emptyColumn.current = i;
+    emptyColumnIndex.current = i;
     movingColumnData.current = mappedColumns.current[i];
-    document.body.addEventListener("mouseup", handleMouseUp);
-    document.body.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
   };
 
   return (
@@ -119,7 +115,7 @@ export const HeaderWrapper = ({
     >
       {mappedColumns.current.map((el, index) => (
         <HeaderCellWrapper
-          isEmpty={index === emptyColumn.current}
+          isEmpty={index === emptyColumnIndex.current}
           onMouseDown={handleMouseDown}
           width={el.width}
           text={el.headerName}
