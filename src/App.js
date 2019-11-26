@@ -7,7 +7,7 @@ import { CellMeasurer, CellMeasurerCache } from "react-virtualized";
 
 import { HeaderWrapper } from "./HeaderWrapper";
 
-const App = ({ rows, columns, width, height, select = "one" }) => {
+const App = ({ rows, columns, width, height, select = "one", onChangeColumns = () => { } }) => {
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([]);
@@ -17,12 +17,10 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
   const cache = useRef(
     new CellMeasurerCache({
       fixedWidth: true,
-      defaultHeight: 100
     })
   );
 
   const handleScroll = e => {
-    console.log(e);
     changeScrollLeft(e.scrollLeft);
   };
 
@@ -116,11 +114,13 @@ const App = ({ rows, columns, width, height, select = "one" }) => {
       const newColumns = setIn(mappedColumns, width, [index, "width"]);
       changeMappedColumns(newColumns);
       fullWidth.current = newColumns.reduce((acc, { width }) => (acc += width), 0);
+      onChangeColumns(newColumns)
     },
     [mappedColumns]
   );
   const handleChangeMoving = useCallback(newColumns => {
     changeMappedColumns(newColumns);
+    onChangeColumns(newColumns)
   }, []);
 
   useEffect(() => {

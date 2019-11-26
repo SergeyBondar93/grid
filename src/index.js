@@ -322,13 +322,13 @@ const rowsWidthChildren = [
   }
 ];
 
-// ReactDOM.render(<App columns={columns} rows={rowsWidthChildren} width={document.documentElement.clientWidth} height={document.documentElement.clientHeight} />, document.getElementById('root'));
 ReactDOM.render(
   <App
-    columns={columns}
+    columns={JSON.parse(localStorage.getItem('колонки')) || columns}
     rows={rows}
-    width={600}
+    width={document.documentElement.clientWidth}
     height={document.documentElement.clientHeight}
+    onChangeColumns={(columns) => localStorage.setItem('колонки', JSON.stringify(columns))}
   />,
   document.getElementById("root")
 );
