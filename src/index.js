@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-
+export default App;
 const width = 150;
 
 const columns = [
@@ -321,15 +321,15 @@ const rowsWithChildren = [
     row: 5
   }
 ];
-
+// JSON.parse(localStorage.getItem('колонки')) || 
 ReactDOM.render(
   <App
-    columns={JSON.parse(localStorage.getItem('колонки')) || columns}
-    // rows={rows}
-    rows={rowsWithChildren}
-    width={800}
-    height={800}
-    onChangeColumns={(columns) => localStorage.setItem('колонки', JSON.stringify(columns))}
+    columns={columns}
+    rows={rows}
+    // rows={rowsWithChildren}
+    width={document.documentElement.clientWidth - 100}
+    height={document.documentElement.clientHeight - 100}
+  // onChangeColumns={(columns) => localStorage.setItem('колонки', JSON.stringify(columns))}
   />,
   document.getElementById("root")
 );

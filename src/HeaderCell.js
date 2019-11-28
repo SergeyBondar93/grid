@@ -1,7 +1,15 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { RightBorder, HeaderCell, HeaderCellContent } from "./styleds";
 
-export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDown, isEmpty }) => {
+export const HeaderCellWrapper = ({
+  text,
+  width,
+  onChangeWidth,
+  index,
+  onMouseDown,
+  isEmpty,
+  changeIsSelectable
+}) => {
   const [newWidth, changeNewWidth] = useState(width);
   const clickX = useRef(0);
   const widthRef = useRef(width);
@@ -14,7 +22,7 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
     e => {
       const { clientX: currentX } = e;
       const calcNewWidth = width + (currentX - clickX.current);
-      if (calcNewWidth >= 1600) return;
+      if (calcNewWidth >= 1200) return;
       else if (calcNewWidth <= 30) {
         changeNewWidth(30);
         widthRef.current = 30;
@@ -27,10 +35,11 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
   );
 
   const handleMouseUp = useCallback(
-    e => {
+    () => {
       onChangeWidth(index, widthRef.current);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mousemove", handleMouseMove);
+      changeIsSelectable(false)
     },
     [handleMouseMove, index, newWidth, onChangeWidth]
   );
@@ -40,10 +49,10 @@ export const HeaderCellWrapper = ({ text, width, onChangeWidth, index, onMouseDo
       clickX.current = e.clientX;
       document.addEventListener("mouseup", handleMouseUp);
       document.addEventListener("mousemove", handleMouseMove);
+      changeIsSelectable(true)
     },
     [handleMouseMove, index, newWidth, onChangeWidth]
   );
-
   return (
     <HeaderCell style={{ width: `${newWidth}px` }}>
       <HeaderCellContent

@@ -12,11 +12,13 @@ import MinusBoxOutlineIcon from 'mdi-react/MinusBoxOutlineIcon';
 import { HeaderWrapper } from "./HeaderWrapper";
 
 const App = ({ rows, columns, width, height, select = "one", onChangeColumns = () => { } }) => {
+
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([]);
   const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => (acc += width), 0));
   const [scrollLeft, changeScrollLeft] = useState(0);
+  const [isSelectable, changeIsSelectable] = useState(false)
   const gridRef = useRef();
   const cache = useRef(
     new CellMeasurerCache({
@@ -25,10 +27,21 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
     })
   );
 
+  useEffect(() => {
+    fullWidth.current = columns.reduce((acc, { width }) => (acc += width), 0)
+    changeMappedColumns(columns)
+  }, [columns]);
+
+  useEffect(() => {
+    changeMappedRows(rows.map(el => ({ ...el, key: guid() })))
+  }, [rows]);
+
+
+
+
   const handleScroll = e => {
     changeScrollLeft(e.scrollLeft);
   };
-
   const onChangeExpand = useCallback((index, childrens) => {
     if (mappedRows[index].isExpand) {
       let childrensLength = 0;
@@ -59,12 +72,12 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
     }
   });
 
-  const handleSelect = (e, key) => {
+  const handleSelect = useCallback((e, key) => {
     if (e.target.tagName === "BUTTON") return;
     if (select === "multi") changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
     if (select === "one")
       selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
-  };
+  }, [select]);
 
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field];
@@ -133,7 +146,7 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
   }, [mappedColumns, mappedRows]);
 
   return (
-    <Wrapper width={width} >
+    <Wrapper width={width} isSelectable={isSelectable}  >
       <HeaderWrapper
         fullWidth={fullWidth.current}
         columns={mappedColumns}
@@ -142,6 +155,7 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
         onChangeMoving={handleChangeMoving}
         visibleWidth={width}
         changeTransform={handleScroll}
+        changeIsSelectable={changeIsSelectable}
       />
       <Body>
         <Grid

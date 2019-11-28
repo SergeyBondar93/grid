@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { HeaderCellWrapper } from "./HeaderCell";
-import { Header } from "./styleds";
+import { Header, MovingElem } from "./styleds";
 
 
 export const HeaderWrapper = ({
@@ -9,6 +9,7 @@ export const HeaderWrapper = ({
   columns,
   onChangeWidth,
   onChangeMoving,
+  changeIsSelectable
 }) => {
   const mappedColumns = useRef(columns);
   const [isMoving, changeIsMoving] = useState(false);
@@ -19,23 +20,19 @@ export const HeaderWrapper = ({
   const headerRef = useRef();
   const emptyColumnIndex = useRef(null);
   const [mouseMove, changeMouseMove] = useState(0);
-  const [startCoord, changeStartCoord] = useState({ x: 0, y: 0 });
+  const [startCoord, changeStartCoord] = useState({ x: 0, y: 0, height: 0 });
   const startClickX = useRef(0);
 
   useEffect(() => {
     mappedColumns.current = columns;
-    changeStartCoord({ x: 0, y: 0 });
+    changeStartCoord({ x: 0, y: 0, height: 0 });
   }, [columns]);
-
   const handleMouseMove = useCallback(
     e => {
       const { clientX } = e;
       const moveMouse = clientX - clickX.current;
 
-      const headerRect = headerRef.current.getBoundingClientRect();
-
       if (moveMouse < 0) {
-        if (movingElemRect.current.left <= headerRect.left) return;
         if (mappedColumns.current[emptyColumnIndex.current - 1]) {
           if (-moveMouse >= mappedColumns.current[emptyColumnIndex.current - 1].width / 2) {
             clickX.current -= mappedColumns.current[emptyColumnIndex.current - 1].width;
@@ -52,7 +49,6 @@ export const HeaderWrapper = ({
           }
         }
       } else if (moveMouse > 0) {
-        if (movingElemRect.current.right >= headerRect.right) return;
         if (mappedColumns.current[emptyColumnIndex.current + 1]) {
           if (moveMouse >= mappedColumns.current[emptyColumnIndex.current + 1].width / 2) {
             clickX.current += mappedColumns.current[emptyColumnIndex.current + 1].width;
@@ -82,12 +78,13 @@ export const HeaderWrapper = ({
     movingColumnData.current = null;
     document.removeEventListener("mouseup", handleMouseUp);
     document.removeEventListener("mousemove", handleMouseMove);
+    changeIsSelectable(false)
   };
 
   const handleMouseDown = (e, i) => {
     clickX.current = e.clientX;
     startClickX.current = e.clientX;
-    const coords = e.target.getBoundingClientRect();
+    const coords = e.currentTarget.getBoundingClientRect();
     changeStartCoord({
       x: coords.left - headerRef.current.getBoundingClientRect().left,
       y: coords.y,
@@ -100,15 +97,14 @@ export const HeaderWrapper = ({
     movingColumnData.current = mappedColumns.current[i];
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("mousemove", handleMouseMove);
+    changeIsSelectable(true)
   };
 
   return (
     <Header
       ref={headerRef}
-      style={{
-        width: ` calc(${fullWidth}px + 100%)`,
-        transform: `translateX(${-translateX}px)`
-      }}
+      width={fullWidth}
+      translateX={-translateX}
     >
       {mappedColumns.current.map((el, index) => (
         <HeaderCellWrapper
@@ -118,22 +114,19 @@ export const HeaderWrapper = ({
           text={el.headerName}
           onChangeWidth={onChangeWidth}
           index={index}
+          changeIsSelectable={changeIsSelectable}
         />
       ))}
       {isMoving && (
-        <div
-          style={{
-            position: "absolute",
-            left: `${startCoord.x}px`,
-            top: `${startCoord.y}px`,
-            transform: `translateX(${mouseMove}px)`,
-            width: `${movingColumnData.current.width}px`,
-            outline: "1px solid black",
-            height: `${startCoord.height}px`
-          }}
+        <MovingElem
+          startCoord={startCoord}
+          mouseMove={mouseMove}
+          width={`${movingColumnData.current.width}px`}
         >
-          {movingColumnData.current.headerName}
-        </div>
+          <span>
+            {movingColumnData.current.headerName}
+          </span>
+        </MovingElem>
       )}
     </Header>
   );
