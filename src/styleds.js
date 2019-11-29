@@ -8,17 +8,57 @@ export const Header = styled.div.attrs(({ translateX }) => ({
   height: 39px;
   overflow: hidden;
   width: ${({ width }) => `calc(${width}px + 100%)`};
+  border-bottom: 1px solid black;
 `;
+
+export const TotalBlock = styled(Header)`
+`;
+
 
 export const Body = styled.div`
+  :hover {
+    div {
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px ;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        background: #888;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    }
+  }
+  div {
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px ;
+      }
+      ::-webkit-scrollbar-track {
+      }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+      }
+      :focus {
+        outline: none;
+      }
+    }
 `;
 
 
-export const Row = styled.div`
-  display: flex;
-`;
-export const BodyCell = styled.div`
-  border: 1px solid black;
+export const BodyCell = styled.div.attrs(({ selected }) => ({
+  style: {
+    backgroundColor: selected ? 'lightblue' : 'rgba(0,0,0,0)'
+  }
+}))`
+  border-bottom: 1px solid black;
   display: flex;
   align-items: center;
   span {
@@ -29,7 +69,12 @@ export const BodyCell = styled.div`
     margin: 10px;
   }
 `;
-export const HeaderCell = styled.div`
+export const HeaderCell = styled.div.attrs(({ width }) => ({
+  style: {
+    width: `${width}px`
+  }
+
+}))`
   outline: 1px solid black;
   float: left;
   display: flex;
@@ -38,16 +83,30 @@ export const HeaderCell = styled.div`
   span {
     margin: 10px;
     display: inline-block;
+    height: 39px;
   }
 `;
+export const TotalCell = styled(HeaderCell)``
+
+export const HeaderCellContent = styled.div`
+  width: calc(100% - 8px);
+  overflow: hidden;
+  ${({ center }) => center && `text-align: center;`};
+  background-color: ${({ isEmpty }) => isEmpty ? "lightblue" : "yellow"};
+`
+
+export const TotalCellContent = styled(HeaderCellContent)`
+  width: 100%;
+`
 
 export const RightBorder = styled.div`
-  border: 1px solid black;
   height: 38px;
-  min-width: 6px;
+  width: 8px;
   position: relative;
   z-index: 9999999;
   cursor: w-resize;
+  background-color: ${({ isEmpty }) => isEmpty ? "lightblue" : "yellow"};
+  border-right: 1px solid black;
 `;
 
 export const AntiSelect = styled.div`
@@ -61,8 +120,11 @@ export const AntiSelect = styled.div`
 `;
 
 
-export const BodyCellContent = styled.div`
+export const BodyCellContent = styled.div`  
   width: ${({ expandLevel }) => `calc(100% - ${expandLevel * 20}px)`}; 
+  ${({ center }) => center && `
+    text-align: center;
+  `}
 `;
 
 
@@ -79,6 +141,8 @@ export const ExpandButtonWrapper = styled.div`
 export const Wrapper = styled.div`
   width: ${({ width }) => `${width}px`} ;
   overflow: hidden;
+  border: 1px solid black;
+  border-radius: 10px;
   ${({ isSelectable }) => isSelectable && `
     -webkit-touch-callout: none; 
     -webkit-user-select: none; 
@@ -92,17 +156,17 @@ export const Wrapper = styled.div`
 `
 
 
-export const HeaderCellContent = styled.div`
-  width: calc(100% - 6px);
-  overflow: hidden;
-  background-color: ${({ isEmpty }) => isEmpty ? "lightblue" : "yellow"};
-`
+
+
+
+
 
 export const AntiSelectLayer = styled.div``;
 
-export const MovingElem = styled(HeaderCell).attrs(({ mouseMove }) => ({
+export const MovingElem = styled(HeaderCell).attrs(({ mouseMove, center }) => ({
   style: {
-    transform: `translateX(${mouseMove}px)`
+    transform: `translateX(${mouseMove}px)`,
+    textAlign: center ? 'center' : undefined
   }
 }))`
   position: absolute;
@@ -110,7 +174,7 @@ export const MovingElem = styled(HeaderCell).attrs(({ mouseMove }) => ({
   top: ${({ startCoord: { y } }) => `${y}px`};
   width: ${({ width }) => `${width}px`};
   outline: "1px solid black";
-  z-index: 9999999999999999999999999999999999999999999999999999;
+  z-index: 999999999999999;
   height: ${ ({ startCoord: { height } }) => `${height}px`};
 `
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Body, BodyCell, BodyCellOffset, BodyCellContent, ExpandButtonWrapper, Wrapper } from "./styleds";
+import { Body, BodyCell, BodyCellOffset, BodyCellContent, ExpandButtonWrapper, Wrapper, TotalBlock, TotalCellContent, TotalCell } from "./styleds";
 import { guid, addOrDeleteItemFromArray } from "./utils";
 import { Grid } from "react-virtualized";
 import { setIn } from "utilitify";
@@ -8,13 +8,12 @@ import PlusBoxOutlineIcon from 'mdi-react/PlusBoxOutlineIcon';
 import MinusBoxOutlineIcon from 'mdi-react/MinusBoxOutlineIcon';
 
 
-
 import { HeaderWrapper } from "./HeaderWrapper";
 
-const App = ({ rows, columns, width, height, select = "one", onChangeColumns = () => { } }) => {
+const App = ({ items, columns, width, height, select = "multi", onChangeColumns = () => { }, totals }) => {
 
   const [mappedColumns, changeMappedColumns] = useState(columns);
-  const [mappedRows, changeMappedRows] = useState(rows.map(el => ({ ...el, key: guid() })));
+  const [mappedRows, changeMappedRows] = useState(items.map(el => ({ ...el, key: guid() })));
   const [selectedRows, changeSelectedRows] = useState([]);
   const fullWidth = useRef(mappedColumns.reduce((acc, { width }) => (acc += width), 0));
   const [scrollLeft, changeScrollLeft] = useState(0);
@@ -33,15 +32,20 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
   }, [columns]);
 
   useEffect(() => {
-    changeMappedRows(rows.map(el => ({ ...el, key: guid() })))
-  }, [rows]);
+    changeMappedRows(items.map(el => ({ ...el, key: guid() })))
+  }, [items]);
 
 
 
 
   const handleScroll = e => {
-    changeScrollLeft(e.scrollLeft);
+    changeScrollLeft(-e.scrollLeft);
+
+
   };
+
+
+
   const onChangeExpand = useCallback((index, childrens) => {
     if (mappedRows[index].isExpand) {
       let childrensLength = 0;
@@ -82,9 +86,12 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field];
     const expandLevel = (!columnIndex && mappedRows[rowIndex].expandLevel) || 0;
-    const isExpandable = mappedColumns[columnIndex].isExpandable;
 
-    const handleExpand = e => {
+    const column = mappedColumns[columnIndex];
+
+    // const isExpandable = mappedColumns[columnIndex].isExpandable;
+
+    const handleExpand = () => {
       onChangeExpand(rowIndex, mappedRows[rowIndex].children);
     };
 
@@ -104,21 +111,21 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
         <BodyCell
           onClick={e => handleSelect(e, mappedRows[rowIndex].key)}
           key={key}
+          selected={checkSelected()}
           style={{
             ...style,
-            backgroundColor: checkSelected(),
-            width: mappedColumns[columnIndex].width
+            width: column.width
           }}
         >
           <BodyCellOffset
             expandLevel={expandLevel}
           />
-          {isExpandable && mappedRows[rowIndex].children ? (
+          {column.isExpandable && mappedRows[rowIndex].children ? (
             <ExpandButtonWrapper onClick={handleExpand}>{mappedRows[rowIndex].isExpand ? <MinusBoxOutlineIcon size='16' /> : <PlusBoxOutlineIcon size='16' />}</ExpandButtonWrapper>
           ) : null}
 
 
-          <BodyCellContent expandLevel={expandLevel} >
+          <BodyCellContent expandLevel={expandLevel} center={!!column.center}>
             <span>{content}</span>
           </BodyCellContent>
         </BodyCell>
@@ -154,7 +161,6 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
         onChangeWidth={handleChangeWidth}
         onChangeMoving={handleChangeMoving}
         visibleWidth={width}
-        changeTransform={handleScroll}
         changeIsSelectable={changeIsSelectable}
       />
       <Body>
@@ -163,15 +169,31 @@ const App = ({ rows, columns, width, height, select = "one", onChangeColumns = (
           columnCount={mappedColumns.length}
           columnWidth={({ index }) => mappedColumns[index].width}
           deferredMeasurementCache={cache.current}
-          height={height}
+          height={height - 39 - 39 /* выоота headerа и высота тотала */}
           cellRenderer={cell}
           rowCount={mappedRows.length}
           rowHeight={cache.current.rowHeight}
-          width={width}
+          width={width - 2}
           onScroll={handleScroll}
         />
       </Body>
-    </Wrapper>
+      {totals &&
+        <TotalBlock
+          width={fullWidth.current}
+          translateX={scrollLeft}
+        >
+          {mappedColumns.map((el, index) => (
+            <TotalCell width={mappedColumns.length === index + 1 ? el.width + 9 : el.width}>
+              <TotalCellContent
+                center={el.center}
+              >
+                <span>{totals[el.field]}</span>
+              </TotalCellContent>
+            </TotalCell>
+          ))}
+        </TotalBlock>
+      }
+    </Wrapper >
   );
 };
 

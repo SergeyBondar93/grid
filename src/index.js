@@ -5,21 +5,35 @@ import App from "./App";
 export default App;
 const width = 150;
 
+const center = true;
+
+const totals = {
+  price: 6000,
+  col1: 200,
+  col2: 150,
+  col3: 9578,
+  col4: 999999999,
+  col5: 132465,
+  col6: 1,
+  col7: 159753,
+}
+
+
 const columns = [
-  { width, headerName: "Number row", field: "row" },
-  { width, headerName: "Make", field: "make" },
+  { totalColumn: true, center, width, headerName: "Number row", field: "row" },
+  { center, width, headerName: "Make", field: "make" },
   { isExpandable: true, width, headerName: "Model", field: "model" },
-  { width, headerName: "Price", field: "price" },
+  { center, width, headerName: "Price", field: "price" },
   { width, headerName: "Col 1", field: "col1" },
-  { width, headerName: "Col 2", field: "col2" },
+  { center, width, headerName: "Col 2", field: "col2" },
   { width, headerName: "Col 3", field: "col3" },
-  { width, headerName: "Col 4", field: "col4" },
+  { center, width, headerName: "Col 4", field: "col4" },
   { width, headerName: "Col 5", field: "col5" },
-  { width, headerName: "Col 6", field: "col6" },
+  { center, width, headerName: "Col 6", field: "col6" },
   { width, headerName: "Col 7", field: "col7" },
-  { width, headerName: "Col 8", field: "col7" },
+  { center, width, headerName: "Col 8", field: "col7" },
   { width, headerName: "Col 9", field: "col8" },
-  { width, headerName: "Col 10", field: "col10" }
+  { center, width, headerName: "Col 10", field: "col10" }
 ];
 
 export const generateLorem = n => {
@@ -325,7 +339,8 @@ const rowsWithChildren = [
 ReactDOM.render(
   <App
     columns={columns}
-    rows={rows}
+    items={rows}
+    totals={totals}
     // rows={rowsWithChildren}
     width={document.documentElement.clientWidth - 100}
     height={document.documentElement.clientHeight - 100}

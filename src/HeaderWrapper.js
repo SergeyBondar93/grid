@@ -69,7 +69,7 @@ export const HeaderWrapper = ({
     [mappedColumns.current, clickX.current]
   );
 
-  const handleMouseUp = e => {
+  const handleMouseUp = () => {
     emptyColumnIndex.current = null;
     changeIsMoving(false);
     changeMouseMove(0);
@@ -104,24 +104,26 @@ export const HeaderWrapper = ({
     <Header
       ref={headerRef}
       width={fullWidth}
-      translateX={-translateX}
+      translateX={translateX}
     >
       {mappedColumns.current.map((el, index) => (
         <HeaderCellWrapper
           isEmpty={index === emptyColumnIndex.current}
           onMouseDown={handleMouseDown}
-          width={el.width}
+          width={mappedColumns.current.length === index + 1 ? el.width + 9 : el.width}
           text={el.headerName}
           onChangeWidth={onChangeWidth}
           index={index}
           changeIsSelectable={changeIsSelectable}
+          center={!!el.center}
         />
       ))}
       {isMoving && (
         <MovingElem
           startCoord={startCoord}
           mouseMove={mouseMove}
-          width={`${movingColumnData.current.width}px`}
+          width={movingColumnData.current.width}
+          center={!!movingColumnData.current.center}
         >
           <span>
             {movingColumnData.current.headerName}

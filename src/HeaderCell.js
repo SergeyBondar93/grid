@@ -8,7 +8,8 @@ export const HeaderCellWrapper = ({
   index,
   onMouseDown,
   isEmpty,
-  changeIsSelectable
+  changeIsSelectable,
+  center
 }) => {
   const [newWidth, changeNewWidth] = useState(width);
   const clickX = useRef(0);
@@ -53,15 +54,17 @@ export const HeaderCellWrapper = ({
     },
     [handleMouseMove, index, newWidth, onChangeWidth]
   );
+
   return (
-    <HeaderCell style={{ width: `${newWidth}px` }}>
+    <HeaderCell width={newWidth}>
       <HeaderCellContent
         isEmpty={isEmpty}
         onMouseDown={e => onMouseDown(e, index)}
+        center={center}
       >
         <span>{isEmpty ? null : text}</span>
       </HeaderCellContent>
-      <RightBorder onMouseDown={handleMouseDown} />
+      <RightBorder onMouseDown={handleMouseDown} isEmpty={isEmpty} />
     </HeaderCell>
   );
 };
