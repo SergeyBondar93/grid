@@ -8,10 +8,10 @@ export const Header = styled.div.attrs(({ translateX }) => ({
   height: 39px;
   overflow: hidden;
   width: ${({ width }) => `calc(${width}px + 100%)`};
-  border-bottom: 1px solid black;
 `;
 
 export const TotalBlock = styled(Header)`
+  border-top: 1px solid black;
 `;
 
 
@@ -58,7 +58,7 @@ export const BodyCell = styled.div.attrs(({ selected }) => ({
     backgroundColor: selected ? 'lightblue' : 'rgba(0,0,0,0)'
   }
 }))`
-  border-bottom: 1px solid black;
+  border-top: 1px solid black;
   display: flex;
   align-items: center;
   span {

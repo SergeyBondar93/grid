@@ -10,7 +10,7 @@ import MinusBoxOutlineIcon from 'mdi-react/MinusBoxOutlineIcon';
 
 import { HeaderWrapper } from "./HeaderWrapper";
 
-const App = ({ items, columns, width, height, select = "multi", onChangeColumns = () => { }, totals }) => {
+const App = ({ items, columns, width, height, isDisableSelect = false, isMultiSelect = false, onChangeColumns = () => { }, totals }) => {
 
   const [mappedColumns, changeMappedColumns] = useState(columns);
   const [mappedRows, changeMappedRows] = useState(items.map(el => ({ ...el, key: guid() })));
@@ -77,19 +77,20 @@ const App = ({ items, columns, width, height, select = "multi", onChangeColumns 
   });
 
   const handleSelect = useCallback((e, key) => {
-    if (e.target.tagName === "BUTTON") return;
-    if (select === "multi") changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
-    if (select === "one")
-      selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
-  }, [select]);
+    if (isDisableSelect || e.target.tagName === "BUTTON") return;
+    if (isMultiSelect) {
+      changeSelectedRows(addOrDeleteItemFromArray(selectedRows, key));
+      return
+    }
+    selectedRows[0] === key ? changeSelectedRows([]) : changeSelectedRows([key]);
+  }, [selectedRows, isDisableSelect, isMultiSelect]);
+
+
 
   const cell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const content = mappedRows[rowIndex][mappedColumns[columnIndex].field];
     const expandLevel = (!columnIndex && mappedRows[rowIndex].expandLevel) || 0;
-
     const column = mappedColumns[columnIndex];
-
-    // const isExpandable = mappedColumns[columnIndex].isExpandable;
 
     const handleExpand = () => {
       onChangeExpand(rowIndex, mappedRows[rowIndex].children);
